@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+senioradmin/node_modules/
+seniordash/node_modules/
+
+# Production
+senioradmin/dist/
+seniordash/dist/
+
+# Environment variables
+.env
+senioradmin/.env
+seniordash/.env
+
+# IDEs and editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build logs
+seniordash/build_output.txt
