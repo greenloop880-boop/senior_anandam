@@ -557,9 +557,17 @@ export default function CommunitiesPage() {
                            if (files.length > 0) {
                              setSaving(true);
                              try {
-                               const urls = await Promise.all(files.map(f => uploadToR2(f, 'gallery')));
-                               setForm({ ...form, gallery: [...form.gallery, ...urls] });
-                             } catch (err) { showToast('Image upload failed', 'error'); }
+                               const urls = [];
+                               for (const file of files) {
+                                 const url = await uploadToR2(file, 'gallery');
+                                 urls.push(url);
+                               }
+                               setForm({ ...form, gallery: [...(form.gallery || []), ...urls] });
+                               showToast(`Successfully uploaded ${files.length} photos`);
+                             } catch (err) { 
+                               console.error('Gallery upload error:', err);
+                               showToast('Image upload failed: ' + err.message, 'error'); 
+                             }
                              finally { setSaving(false); }
                            }
                         }} />
@@ -585,7 +593,11 @@ export default function CommunitiesPage() {
                                  try {
                                    const url = await uploadToR2(file, 'floorplans');
                                    const newFp = [...form.floor_plans]; newFp[idx].image = url; setForm({ ...form, floor_plans: newFp });
-                                 } catch (err) { showToast('Upload failed', 'error'); }
+                                   showToast('Floor plan uploaded!');
+                                 } catch (err) { 
+                                   console.error('Floor plan upload error:', err);
+                                   showToast('Upload failed: ' + err.message, 'error'); 
+                                 }
                                  finally { setSaving(false); }
                                }
                             }} />

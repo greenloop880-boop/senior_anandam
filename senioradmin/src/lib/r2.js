@@ -31,8 +31,9 @@ export async function uploadToR2(file, folder = 'uploads') {
     });
 
     if (!uploadRes.ok) {
-      const text = await uploadRes.text().catch(() => uploadRes.status);
-      throw new Error(`R2 upload failed: ${text}`);
+      const text = await uploadRes.text().catch(() => 'No error body');
+      console.error('R2 Server Error Response:', text);
+      throw new Error(`R2 upload failed (${uploadRes.status}): ${text}`);
     }
 
     // 3. Return the public URL for saving to the DB
