@@ -29,49 +29,26 @@ const ICON_MAP = {
   'Pune': PuneIcon
 };
 
-const DEFAULT_CITIES = [
-  { name: 'Ahmedabad', icon: AhmedabadIcon },
-  { name: 'Bangalore', icon: BangaloreIcon },
-  { name: 'Chennai', icon: ChennaiIcon },
-  { name: 'Delhi', icon: DelhiIcon },
-  { name: 'Hyderabad', icon: HyderabadIcon },
-  { name: 'Jaipur', icon: JaipurIcon },
-  { name: 'Kolkata', icon: KolkataIcon },
-  { name: 'Lucknow', icon: LucknowIcon },
+const METRO_CITIES = [
   { name: 'Mumbai', icon: MumbaiIcon },
-  { name: 'Pune', icon: PuneIcon }
+  { name: 'Delhi', icon: DelhiIcon },
+  { name: 'Bangalore', icon: BangaloreIcon },
+  { name: 'Hyderabad', icon: HyderabadIcon },
+  { name: 'Chennai', icon: ChennaiIcon },
+  { name: 'Kolkata', icon: KolkataIcon },
+  { name: 'Pune', icon: PuneIcon },
+  { name: 'Ahmedabad', icon: AhmedabadIcon },
+  { name: 'Lucknow', icon: LucknowIcon },
+  { name: 'Bhubaneswar', icon: MumbaiIcon } // Using MumbaiIcon as fallback since BhubaneswarIcon doesn't exist
 ];
 
-const CityGrid = () => {
-  const [cities, setCities] = useState(DEFAULT_CITIES);
+const CityGrid = ({ onCityClick }) => {
+  const [cities, setCities] = useState(METRO_CITIES);
+  const [searchInput, setSearchInput] = useState('');
 
-  useEffect(() => {
-    async function fetchActiveCities() {
-      if (!isSupabaseConfigured) return;
-      try {
-        // Fetch unique locations from communities
-        const { data, error } = await supabase
-          .from('communities')
-          .select('location');
-          
-        if (!error && data?.length > 0) {
-          const uniqueLocations = [...new Set(data.map(c => c.location))];
-          const dynamicCities = uniqueLocations.map(loc => ({
-            name: loc,
-            icon: ICON_MAP[loc] || MumbaiIcon // Fallback icon
-          }));
-          
-          // Merge with defaults to ensure we have icons if possible
-          if (dynamicCities.length > 0) {
-            setCities(dynamicCities);
-          }
-        }
-      } catch (err) {
-        console.error('Error fetching active cities:', err);
-      }
-    }
-    fetchActiveCities();
-  }, []);
+  const handleBrowse = () => {
+    if (onCityClick) onCityClick(searchInput);
+  };
 
   return (
     <section className="city-section section-padding">
@@ -80,9 +57,16 @@ const CityGrid = () => {
         <div className="search-header-container">
           <h2 className="main-search-title">Find Retirement Homes in India</h2>
           <div className="search-input-wrapper">
-            <input type="text" placeholder="Search a senior home or city" className="city-search-input" />
+            <input 
+              type="text" 
+              placeholder="Search a senior home or city" 
+              className="city-search-input"
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleBrowse()}
+            />
           </div>
-          <button className="btn-browse">Browse</button>
+          <button className="btn-browse" onClick={handleBrowse}>Browse</button>
         </div>
 
         <div className="city-box">
@@ -92,7 +76,12 @@ const CityGrid = () => {
             {cities.map((city, index) => {
               const Icon = city.icon;
               return (
-                <div className="city-card" key={index}>
+                <div 
+                  className="city-card" 
+                  key={index}
+                  onClick={() => onCityClick && onCityClick(city.name)}
+                  style={{ cursor: 'pointer' }}
+                >
                   <div className="city-icon-wrapper">
                     <Icon size={48} strokeWidth={1.2} className="city-icon" />
                   </div>

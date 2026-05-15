@@ -31,6 +31,7 @@ const SearchWidget = ({ onSearch }) => {
   const [activeTab, setActiveTab] = useState('seniorLiving');
   const [facilityOptions, setFacilityOptions] = useState(DEFAULT_FACILITY_OPTIONS);
   const [locationOptions, setLocationOptions] = useState(DEFAULT_LOCATION_OPTIONS);
+  const [dynamicRoomOptions, setDynamicRoomOptions] = useState(roomOptions);
   
   const [selectedFacilities, setSelectedFacilities] = useState([]);
   const [isFacilityOpen, setIsFacilityOpen] = useState(false);
@@ -50,12 +51,28 @@ const SearchWidget = ({ onSearch }) => {
     async function fetchDynamicOptions() {
       if (!isSupabaseConfigured) return;
       try {
-        const { data } = await supabase.from('communities').select('location, type');
-        if (data) {
-          const locs = [...new Set(data.map(c => c.location))].filter(Boolean);
-          const types = [...new Set(data.map(c => c.type))].filter(Boolean);
+        // Fetch locations from communities
+        const { data: communityData } = await supabase.from('communities').select('location');
+        if (communityData) {
+          const locs = [...new Set(communityData.map(c => c.location))].filter(Boolean);
           if (locs.length > 0) setLocationOptions(locs);
-          if (types.length > 0) setFacilityOptions(types);
+        }
+
+        // Fetch categories from categories table
+        const { data: categoryData } = await supabase.from('categories').select('name, category_group');
+        if (categoryData) {
+          const facilities = categoryData.filter(c => c.category_group === 'facility').map(c => c.name);
+          const rooms = categoryData.filter(c => c.category_group === 'room').map(c => ({ name: c.name, icon: Home }));
+          
+          if (facilities.length > 0) setFacilityOptions(facilities);
+          // If we have dynamic rooms, we merge them with default ones or replace
+          if (rooms.length > 0) {
+            const mergedRooms = rooms.map(dr => {
+              const defaultRoom = roomOptions.find(r => r.name === dr.name);
+              return defaultRoom ? defaultRoom : dr;
+            });
+            setDynamicRoomOptions(mergedRooms);
+          }
         }
       } catch (err) {
         console.error('SearchWidget options fetch error:', err);
@@ -175,7 +192,7 @@ const SearchWidget = ({ onSearch }) => {
                   <button className="close-btn" onClick={() => setIsRoomOpen(false)}><X size={16} strokeWidth={1.5} /></button>
                 </div>
                 <div className="room-cards-grid">
-                  {roomOptions.map((room) => {
+                  {dynamicRoomOptions.map((room) => {
                     const Icon = room.icon;
                     const isSelected = selectedRooms.includes(room.name);
                     return (

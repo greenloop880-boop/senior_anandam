@@ -37,7 +37,7 @@ const Footer = ({ setCurrentPage }) => {
           <div className="footer-col">
             <h4 className="footer-title">Quick Links</h4>
             <ul className="footer-links">
-              <li><a href="#" onClick={(e) => { e.preventDefault(); navigate('home'); }}>Communities</a></li>
+              <li><a href="#" onClick={(e) => { e.preventDefault(); navigate('all-communities'); }}>Communities</a></li>
               <li><a href="#" onClick={(e) => { e.preventDefault(); navigate('home'); }}>Floor Plans</a></li>
               <li><a href="#" onClick={(e) => { e.preventDefault(); navigate('home'); }}>Services</a></li>
               <li><a href="#" onClick={(e) => { e.preventDefault(); navigate('about'); }}>About Us</a></li>

@@ -31,7 +31,7 @@ const Navbar = ({ currentPage, setCurrentPage, openTourModal }) => {
 
           <ul className="nav-links">
             <li><a href="#" onClick={(e) => { e.preventDefault(); goTo('home'); }} className="active">Home</a></li>
-            <li><a href="#" onClick={(e) => { e.preventDefault(); goTo('home'); }}>Communities</a></li>
+            <li><a href="#" onClick={(e) => { e.preventDefault(); goTo('all-communities'); }}>Communities</a></li>
             <li><a href="#" onClick={(e) => { e.preventDefault(); goTo('home-modification'); }}>Services</a></li>
             <li><a href="#" onClick={(e) => { e.preventDefault(); goTo('about'); }}>About Us</a></li>
             <li><a href="#" onClick={(e) => { e.preventDefault(); goTo('home'); }}>Resources</a></li>

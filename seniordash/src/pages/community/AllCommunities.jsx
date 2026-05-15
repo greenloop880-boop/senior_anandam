@@ -161,7 +161,15 @@ const CommunityCard = ({ community, onSelect }) => {
         </p>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderTop: '1px solid #f0f0f0', paddingTop: '1rem' }}>
           <div>
-            <div style={{ fontSize: '1rem', fontWeight: 700, color: '#1a2035' }}>{community.price}</div>
+            <div style={{ fontSize: '1rem', fontWeight: 700, color: '#1a2035' }}>
+              {(() => {
+                const p = String(community.price || '');
+                const isNum = /^\d+$/.test(p);
+                const formatted = isNum ? new Intl.NumberFormat('en-IN').format(Number(p)) : p;
+                const hasSym = p.includes('$') || p.includes('₹') || p.toLowerCase().includes('from');
+                return (hasSym ? '' : '₹') + formatted;
+              })()}
+            </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginTop: '3px' }}>
               <Stars rating={community.rating} />
               <span style={{ fontSize: '0.8rem', color: '#888' }}>({community.reviews})</span>

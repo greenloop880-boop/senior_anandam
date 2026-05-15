@@ -88,7 +88,7 @@ function App() {
         {currentPage === 'home' && (
           <>
             <Hero onSearch={handleSearch} />
-            <CityGrid />
+            <CityGrid onCityClick={(cityName) => handleSearch({ location: cityName })} />
             <TrustMetrics />
             <VideoTestimonial />
             <Features />

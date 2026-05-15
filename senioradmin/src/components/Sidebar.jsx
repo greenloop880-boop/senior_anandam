@@ -4,12 +4,13 @@ import logoImg from '../assets/logo.png';
 import {
   LayoutDashboard, Building2, MessageSquare, Users,
   ImageIcon, Settings, LogOut, Menu, X,
-  ChevronRight, Bell
+  ChevronRight, Bell, Layers
 } from 'lucide-react';
 
 const NAV_ITEMS = [
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'communities', label: 'Communities', icon: Building2 },
+  { id: 'categories', label: 'Categories', icon: Layers },
   { id: 'testimonials', label: 'Testimonials', icon: MessageSquare },
   { id: 'inquiries', label: 'Inquiries', icon: Users },
   { id: 'media', label: 'Media Library', icon: ImageIcon },

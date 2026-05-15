@@ -68,7 +68,13 @@ const ResidenceCard = ({ res }) => {
       {/* Content */}
       <div style={{ padding: '1.5rem' }}>
         <p style={{ fontSize: '1.5rem', fontWeight: 700, color: '#1a1a2e', marginBottom: '0.75rem' }}>
-          {res.price}
+          {(() => {
+            const p = String(res.price || '');
+            const isNum = /^\d+$/.test(p);
+            const formatted = isNum ? new Intl.NumberFormat('en-IN').format(Number(p)) : p;
+            const hasSym = p.includes('$') || p.includes('₹') || p.toLowerCase().includes('from');
+            return (hasSym ? '' : '₹') + formatted;
+          })()}
         </p>
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#6b7280', fontSize: '0.875rem', marginBottom: '1rem' }}>

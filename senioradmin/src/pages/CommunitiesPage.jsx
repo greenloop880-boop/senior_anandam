@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 
 const LOCATIONS = [
-  "Mumbai", "Pune", "Bengaluru", "Hyderabad", "Chennai", 
+  "Mumbai", "Pune", "Bengaluru", "Hyderabad", "Chennai",
   "Delhi NCR", "Kolkata", "Ahmedabad", "Bhubaneswar", "Goa",
   "Maplewood, CA", "Seaside, CA", "Lake Tahoe, CA" // fallback for demo data
 ];
@@ -88,7 +88,30 @@ export default function CommunitiesPage() {
     }
   }
 
-  useEffect(() => { fetchCommunities(); }, []);
+  const [categoryGroups, setCategoryGroups] = useState({});
+
+  async function fetchCategories() {
+    if (!isSupabaseConfigured) return;
+    try {
+      const { data } = await supabase.from('categories').select('name, category_group');
+      if (data) {
+        const grouped = data.reduce((acc, cat) => {
+          const group = cat.category_group;
+          if (!acc[group]) acc[group] = [];
+          acc[group].push(cat.name);
+          return acc;
+        }, {});
+        setCategoryGroups(grouped);
+      }
+    } catch (err) {
+      console.error('Error fetching categories:', err);
+    }
+  }
+
+  useEffect(() => { 
+    fetchCommunities(); 
+    fetchCategories();
+  }, []);
 
   const openAdd = () => {
     setEditId(null);
@@ -146,7 +169,7 @@ export default function CommunitiesPage() {
         imageUrl = await uploadToR2(imageFile, 'communities');
       }
 
-      const payload = { 
+      const payload = {
         title: form.title, location: form.address?.city || form.location, type: form.type, price: form.price,
         description: form.description, rating: form.rating, reviews: form.reviews, badge: form.badge,
         image: imageUrl, about_text: form.about_text,
@@ -345,10 +368,10 @@ export default function CommunitiesPage() {
             <div style={{ display: 'flex', gap: '3rem', flexWrap: 'wrap' }}>
               {/* Left Column */}
               <div style={{ flex: '1 1 400px', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                
+
                 <div style={{ border: '1px solid #f0f0f8', padding: '1.5rem', borderRadius: '12px', background: '#fcfcfd' }}>
                   <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.1rem', color: '#1a2035', borderBottom: '1px solid #eaeaea', paddingBottom: '10px' }}>1. Basic Information</h3>
-                  
+
                   <div style={{ marginBottom: '1.25rem' }}>
                     <label style={labelStyle}>COVER IMAGE</label>
                     <div
@@ -374,7 +397,7 @@ export default function CommunitiesPage() {
                     </div>
                     <input
                       type="text" value={form.image} onChange={(e) => { setForm(f => ({ ...f, image: e.target.value })); setImagePreview(e.target.value); }}
-                      placeholder="...or paste image URL" style={{...inputStyle, marginTop: '8px'}}
+                      placeholder="...or paste image URL" style={{ ...inputStyle, marginTop: '8px' }}
                     />
                   </div>
 
@@ -411,10 +434,36 @@ export default function CommunitiesPage() {
                   </div>
 
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                    {/* Facility Type */}
                     <div>
-                      <label style={labelStyle}>TYPE</label>
-                      <input type="text" value={form.type} onChange={(e) => setForm(f => ({ ...f, type: e.target.value }))} placeholder="e.g. Independent Living" style={inputStyle} />
+                      <label style={labelStyle}>FACILITY TYPE</label>
+                      <select 
+                        value={form.type} 
+                        onChange={(e) => setForm(f => ({ ...f, type: e.target.value }))} 
+                        style={inputStyle}
+                      >
+                        <option value="">Select Facility Type</option>
+                        {(categoryGroups['facility'] || []).map(name => (
+                          <option key={name} value={name}>{name}</option>
+                        ))}
+                      </select>
                     </div>
+
+                    {/* Room Type */}
+                    <div>
+                      <label style={labelStyle}>ROOM TYPE</label>
+                      <select 
+                        value={form.quick_facts?.room_type || ''} 
+                        onChange={(e) => setForm(f => ({ ...f, quick_facts: { ...f.quick_facts, room_type: e.target.value } }))} 
+                        style={inputStyle}
+                      >
+                        <option value="">Select Room Type</option>
+                        {(categoryGroups['room'] || []).map(name => (
+                          <option key={name} value={name}>{name}</option>
+                        ))}
+                      </select>
+                    </div>
+
                     <div>
                       <label style={labelStyle}>BADGE</label>
                       <input type="text" value={form.badge} onChange={(e) => setForm(f => ({ ...f, badge: e.target.value }))} placeholder="e.g. Premium, Top Rated" style={inputStyle} />
@@ -463,28 +512,25 @@ export default function CommunitiesPage() {
 
               {/* Right Column */}
               <div style={{ flex: '1 1 400px', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                
+
                 <div style={{ border: '1px solid #f0f0f8', padding: '1.5rem', borderRadius: '12px', background: '#fcfcfd' }}>
                   <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.1rem', color: '#1a2035', borderBottom: '1px solid #eaeaea', paddingBottom: '10px' }}>3. Features & Amenities</h3>
-                  
+
                   <div style={{ marginBottom: '1.5rem' }}>
                     <label style={labelStyle}>QUICK FACTS</label>
                     <div style={{ background: '#fff', padding: '1rem', borderRadius: '10px', border: '1px solid #e5e7eb', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-                      <div>
-                        <label style={{ fontSize: '0.7rem', color: '#666', fontWeight: 600 }}>Community Type</label>
-                        <input type="text" value={form.quick_facts?.type || ''} onChange={(e) => setForm({ ...form, quick_facts: { ...form.quick_facts, type: e.target.value } })} placeholder="e.g. Independent Living" style={{...inputStyle, padding: '6px 10px'}} />
-                      </div>
+
                       <div>
                         <label style={{ fontSize: '0.7rem', color: '#666', fontWeight: 600 }}>Total Residences</label>
-                        <input type="text" value={form.quick_facts?.residences || ''} onChange={(e) => setForm({ ...form, quick_facts: { ...form.quick_facts, residences: e.target.value } })} placeholder="e.g. 120 Units" style={{...inputStyle, padding: '6px 10px'}} />
+                        <input type="text" value={form.quick_facts?.residences || ''} onChange={(e) => setForm({ ...form, quick_facts: { ...form.quick_facts, residences: e.target.value } })} placeholder="e.g. 120 Units" style={{ ...inputStyle, padding: '6px 10px' }} />
                       </div>
                       <div>
                         <label style={{ fontSize: '0.7rem', color: '#666', fontWeight: 600 }}>Year Opened</label>
-                        <input type="text" value={form.quick_facts?.yearOpened || ''} onChange={(e) => setForm({ ...form, quick_facts: { ...form.quick_facts, yearOpened: e.target.value } })} placeholder="e.g. 2018" style={{...inputStyle, padding: '6px 10px'}} />
+                        <input type="text" value={form.quick_facts?.yearOpened || ''} onChange={(e) => setForm({ ...form, quick_facts: { ...form.quick_facts, yearOpened: e.target.value } })} placeholder="e.g. 2018" style={{ ...inputStyle, padding: '6px 10px' }} />
                       </div>
                       <div>
                         <label style={{ fontSize: '0.7rem', color: '#666', fontWeight: 600 }}>Pet Friendly</label>
-                        <input type="text" value={form.quick_facts?.petFriendly || ''} onChange={(e) => setForm({ ...form, quick_facts: { ...form.quick_facts, petFriendly: e.target.value } })} placeholder="e.g. Yes (Dogs & Cats)" style={{...inputStyle, padding: '6px 10px'}} />
+                        <input type="text" value={form.quick_facts?.petFriendly || ''} onChange={(e) => setForm({ ...form, quick_facts: { ...form.quick_facts, petFriendly: e.target.value } })} placeholder="e.g. Yes (Dogs & Cats)" style={{ ...inputStyle, padding: '6px 10px' }} />
                       </div>
                     </div>
                   </div>
@@ -498,7 +544,7 @@ export default function CommunitiesPage() {
                           const isSelected = (form.amenities || []).some(a => a.title === am.title);
                           return (
                             <label key={am.title} style={{ display: 'flex', alignItems: 'center', gap: '8px', background: isSelected ? '#eef2ff' : '#f8f9fc', padding: '8px 10px', borderRadius: '8px', border: isSelected ? '1px solid #818cf8' : '1px solid transparent', cursor: 'pointer', transition: 'all 0.2s' }}>
-                              <input 
+                              <input
                                 type="checkbox" checked={isSelected}
                                 onChange={(e) => {
                                   if (e.target.checked) setForm({ ...form, amenities: [...form.amenities, am] });
@@ -518,12 +564,12 @@ export default function CommunitiesPage() {
                         return (
                           <div key={globalIdx} style={{ display: 'flex', gap: '10px', background: '#f8f9fc', padding: '10px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
                             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                               <input type="text" placeholder="Title (e.g. Golf Course)" value={am.title || ''} onChange={(e) => {
-                                 const newAm = [...form.amenities]; newAm[globalIdx].title = e.target.value; setForm({ ...form, amenities: newAm });
-                               }} style={{...inputStyle, padding: '6px 10px'}} />
-                               <textarea placeholder="Description paragraph..." value={am.desc || ''} onChange={(e) => {
-                                 const newAm = [...form.amenities]; newAm[globalIdx].desc = e.target.value; setForm({ ...form, amenities: newAm });
-                               }} rows={2} style={{...inputStyle, padding: '6px 10px', resize: 'vertical'}} />
+                              <input type="text" placeholder="Title (e.g. Golf Course)" value={am.title || ''} onChange={(e) => {
+                                const newAm = [...form.amenities]; newAm[globalIdx].title = e.target.value; setForm({ ...form, amenities: newAm });
+                              }} style={{ ...inputStyle, padding: '6px 10px' }} />
+                              <textarea placeholder="Description paragraph..." value={am.desc || ''} onChange={(e) => {
+                                const newAm = [...form.amenities]; newAm[globalIdx].desc = e.target.value; setForm({ ...form, amenities: newAm });
+                              }} rows={2} style={{ ...inputStyle, padding: '6px 10px', resize: 'vertical' }} />
                             </div>
                             <button onClick={() => setForm({ ...form, amenities: form.amenities.filter((_, i) => i !== globalIdx) })} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '5px' }}><Trash2 size={16} /></button>
                           </div>
@@ -538,38 +584,38 @@ export default function CommunitiesPage() {
 
                 <div style={{ border: '1px solid #f0f0f8', padding: '1.5rem', borderRadius: '12px', background: '#fcfcfd' }}>
                   <h3 style={{ margin: '0 0 1rem 0', fontSize: '1.1rem', color: '#1a2035', borderBottom: '1px solid #eaeaea', paddingBottom: '10px' }}>4. Media & Plans</h3>
-                  
+
                   <div style={{ marginBottom: '1.5rem' }}>
                     <label style={labelStyle}>PHOTO GALLERY</label>
                     <div style={{ background: '#fff', padding: '1rem', borderRadius: '10px', border: '1px solid #e5e7eb', display: 'flex', flexDirection: 'column', gap: '10px' }}>
                       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(80px, 1fr))', gap: '10px' }}>
                         {(form.gallery || []).map((imgUrl, idx) => (
                           <div key={idx} style={{ position: 'relative', aspectRatio: '1', borderRadius: '8px', overflow: 'hidden', border: '1px solid #e5e7eb' }}>
-                             <img src={imgUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                             <button onClick={() => setForm({ ...form, gallery: form.gallery.filter((_, i) => i !== idx) })} style={{ position: 'absolute', top: '4px', right: '4px', background: 'rgba(255,255,255,0.9)', color: '#ef4444', border: 'none', borderRadius: '4px', padding: '4px', cursor: 'pointer' }}><Trash2 size={12} /></button>
+                            <img src={imgUrl} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            <button onClick={() => setForm({ ...form, gallery: form.gallery.filter((_, i) => i !== idx) })} style={{ position: 'absolute', top: '4px', right: '4px', background: 'rgba(255,255,255,0.9)', color: '#ef4444', border: 'none', borderRadius: '4px', padding: '4px', cursor: 'pointer' }}><Trash2 size={12} /></button>
                           </div>
                         ))}
                       </div>
                       <label style={{ background: '#f8f9fc', border: '1.5px dashed #3b4b8a', color: '#3b4b8a', padding: '8px', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '5px' }}>
                         <Plus size={16} /> Upload Photos
                         <input type="file" accept="image/*" multiple style={{ display: 'none' }} onChange={async (e) => {
-                           const files = Array.from(e.target.files);
-                           if (files.length > 0) {
-                             setSaving(true);
-                             try {
-                               const urls = [];
-                               for (const file of files) {
-                                 const url = await uploadToR2(file, 'gallery');
-                                 urls.push(url);
-                               }
-                               setForm({ ...form, gallery: [...(form.gallery || []), ...urls] });
-                               showToast(`Successfully uploaded ${files.length} photos`);
-                             } catch (err) { 
-                               console.error('Gallery upload error:', err);
-                               showToast('Image upload failed: ' + err.message, 'error'); 
-                             }
-                             finally { setSaving(false); }
-                           }
+                          const files = Array.from(e.target.files);
+                          if (files.length > 0) {
+                            setSaving(true);
+                            try {
+                              const urls = [];
+                              for (const file of files) {
+                                const url = await uploadToR2(file, 'gallery');
+                                urls.push(url);
+                              }
+                              setForm({ ...form, gallery: [...(form.gallery || []), ...urls] });
+                              showToast(`Successfully uploaded ${files.length} photos`);
+                            } catch (err) {
+                              console.error('Gallery upload error:', err);
+                              showToast('Image upload failed: ' + err.message, 'error');
+                            }
+                            finally { setSaving(false); }
+                          }
                         }} />
                       </label>
                     </div>
@@ -587,28 +633,28 @@ export default function CommunitiesPage() {
                               <Upload size={18} color="#888" />
                             )}
                             <input type="file" accept="image/*" style={{ position: 'absolute', inset: 0, opacity: 0, cursor: 'pointer' }} onChange={async (e) => {
-                               const file = e.target.files[0];
-                               if (file) {
-                                 setSaving(true);
-                                 try {
-                                   const url = await uploadToR2(file, 'floorplans');
-                                   const newFp = [...form.floor_plans]; newFp[idx].image = url; setForm({ ...form, floor_plans: newFp });
-                                   showToast('Floor plan uploaded!');
-                                 } catch (err) { 
-                                   console.error('Floor plan upload error:', err);
-                                   showToast('Upload failed: ' + err.message, 'error'); 
-                                 }
-                                 finally { setSaving(false); }
-                               }
+                              const file = e.target.files[0];
+                              if (file) {
+                                setSaving(true);
+                                try {
+                                  const url = await uploadToR2(file, 'floorplans');
+                                  const newFp = [...form.floor_plans]; newFp[idx].image = url; setForm({ ...form, floor_plans: newFp });
+                                  showToast('Floor plan uploaded!');
+                                } catch (err) {
+                                  console.error('Floor plan upload error:', err);
+                                  showToast('Upload failed: ' + err.message, 'error');
+                                }
+                                finally { setSaving(false); }
+                              }
                             }} />
                           </div>
                           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '5px', justifyContent: 'center' }}>
-                             <input type="text" placeholder="Plan Name (e.g. Studio)" value={fp.name || ''} onChange={(e) => {
-                               const newFp = [...form.floor_plans]; newFp[idx].name = e.target.value; setForm({ ...form, floor_plans: newFp });
-                             }} style={{...inputStyle, padding: '6px 10px'}} />
-                             <input type="text" placeholder="Size (e.g. 450 sq ft)" value={fp.size || ''} onChange={(e) => {
-                               const newFp = [...form.floor_plans]; newFp[idx].size = e.target.value; setForm({ ...form, floor_plans: newFp });
-                             }} style={{...inputStyle, padding: '6px 10px'}} />
+                            <input type="text" placeholder="Plan Name (e.g. Studio)" value={fp.name || ''} onChange={(e) => {
+                              const newFp = [...form.floor_plans]; newFp[idx].name = e.target.value; setForm({ ...form, floor_plans: newFp });
+                            }} style={{ ...inputStyle, padding: '6px 10px' }} />
+                            <input type="text" placeholder="Size (e.g. 450 sq ft)" value={fp.size || ''} onChange={(e) => {
+                              const newFp = [...form.floor_plans]; newFp[idx].size = e.target.value; setForm({ ...form, floor_plans: newFp });
+                            }} style={{ ...inputStyle, padding: '6px 10px' }} />
                           </div>
                           <button onClick={() => setForm({ ...form, floor_plans: form.floor_plans.filter((_, i) => i !== idx) })} style={{ background: 'none', border: 'none', color: '#ef4444', cursor: 'pointer', padding: '5px' }}><Trash2 size={16} /></button>
                         </div>

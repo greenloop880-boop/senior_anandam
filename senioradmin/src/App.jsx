@@ -8,6 +8,7 @@ import TestimonialsPage from './pages/TestimonialsPage';
 import InquiriesPage from './pages/InquiriesPage';
 import MediaPage from './pages/MediaPage';
 import SettingsPage from './pages/SettingsPage';
+import CategoriesPage from './pages/CategoriesPage';
 
 function AdminLayout() {
   const { user, loading } = useAuth();
@@ -46,6 +47,7 @@ function AdminLayout() {
     inquiries: <InquiriesPage />,
     media: <MediaPage />,
     settings: <SettingsPage />,
+    categories: <CategoriesPage />,
   };
 
   return (
