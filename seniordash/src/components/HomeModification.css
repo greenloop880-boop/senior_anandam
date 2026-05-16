@@ -19,9 +19,7 @@
   background-color: #f0f4f8;
   padding: 0;
   overflow: hidden;
-  height: 80vh;
   min-height: 550px;
-  max-height: 750px;
   display: flex;
   align-items: stretch;
 }
@@ -36,10 +34,10 @@
 /* Left panel — text */
 .hm-hero-left {
   background: linear-gradient(180deg, #f0f4f8 0%, #e1e8ed 100%);
-  padding: 4rem 6rem 4rem 4rem;
+  padding: 3rem 6rem 4rem 4rem;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .hm-hero-left h1 {
@@ -575,6 +573,19 @@
 
   .hm-contact-grid {
     grid-template-columns: 1fr;
+  }
+
+  .hm-mods-grid {
+    grid-template-columns: repeat(2, 1fr);
+    overflow-x: visible;
+  }
+
+  .hm-mod-item:nth-child(even) {
+    border-right: none;
+  }
+
+  .hm-mod-item {
+    border-bottom: 1px solid var(--border-color);
   }
 
   .hm-quote-inner {

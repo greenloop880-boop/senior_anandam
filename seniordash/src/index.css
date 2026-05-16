@@ -1,5 +1,17 @@
 @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Nunito:wght@400;500;600;700;800&display=swap');
 
+html {
+  scroll-behavior: smooth;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
 :root {
   --primary-color: #2F3966;
   /* Deep Navy/Greyish from user request */
@@ -60,6 +72,15 @@ h6 {
   padding: 0 2rem;
 }
 
+@media (max-width: 768px) {
+  .container {
+    padding: 0 1rem;
+  }
+  .mobile-p-15 {
+    padding: 1.5rem !important;
+  }
+}
+
 /* Common Components */
 .btn {
   display: inline-flex;
@@ -74,6 +95,7 @@ h6 {
   border: none;
   font-family: var(--font-sans);
   letter-spacing: 0.02em;
+  min-height: 44px;
 }
 
 .btn-primary {

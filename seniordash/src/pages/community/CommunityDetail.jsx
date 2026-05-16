@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronRight, MapPin, FileText, Users, Utensils, TreePine, Calendar, HeartHandshake, ShieldCheck, Home, PawPrint, ArrowRight, CheckCircle2, BedDouble } from 'lucide-react';
-import CommunityNavbar from './CommunityNavbar';
-import CommunityFooter from './CommunityFooter';
+import logoImg from '../../assets/logo.png';
 import TourModal from '../../components/TourModal';
 
 // Fallback features if none provided in DB
@@ -35,8 +34,21 @@ const DEFAULT_FLOOR_PLANS = [
   { name: 'One Bedroom Deluxe', size: '750 sq ft', image: 'https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=400&q=80' }
 ];
 
+const getEmbedUrl = (url) => {
+  if (!url) return '';
+  if (url.includes('youtube.com/embed/')) return url;
+  let videoId = '';
+  if (url.includes('youtube.com/watch?v=')) {
+    videoId = url.split('v=')[1]?.split('&')[0];
+  } else if (url.includes('youtu.be/')) {
+    videoId = url.split('youtu.be/')[1]?.split('?')[0];
+  }
+  return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
+};
+
 const CommunityDetail = ({ community, onBack, openTourModal, isTourModalOpen, closeTourModal }) => {
   const [activeTab, setActiveTab] = useState('Overview');
+  const [enlargedImage, setEnlargedImage] = useState(null);
 
   const title = community?.title || community?.name || 'The Gardens at Elm Creek';
   const location = community?.location || 'Maplewood, CA';
@@ -59,10 +71,10 @@ const CommunityDetail = ({ community, onBack, openTourModal, isTourModalOpen, cl
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#ffffff', fontFamily: "'Inter', 'Nunito', sans-serif", color: '#333' }}>
-      <CommunityNavbar onBack={onBack} onTourClick={openTourModal} />
+      
       
       {/* Main Content Container */}
-      <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '120px 2rem 4rem 2rem' }}>
+      <main className="mobile-p-15" style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 2rem 4rem 2rem' }}>
         
         {/* Breadcrumb */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: '#666', marginBottom: '2rem' }}>
@@ -104,7 +116,7 @@ const CommunityDetail = ({ community, onBack, openTourModal, isTourModalOpen, cl
         </div>
 
         {/* Navigation Tabs */}
-        <div style={{ borderBottom: '1px solid #eee', marginBottom: '4rem', display: 'flex', gap: '2.5rem', overflowX: 'auto' }}>
+        <div className="hide-scrollbar" style={{ borderBottom: '1px solid #eee', marginBottom: '4rem', display: 'flex', gap: '2.5rem', overflowX: 'auto' }}>
           {tabs.map((tab) => (
             <div key={tab} onClick={() => setActiveTab(tab)} style={{
                 paddingBottom: '1rem', cursor: 'pointer', fontWeight: 600, fontSize: '0.95rem',
@@ -118,18 +130,20 @@ const CommunityDetail = ({ community, onBack, openTourModal, isTourModalOpen, cl
         </div>
 
         {activeTab === 'Overview' && (
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4rem', marginBottom: '5rem' }}>
-            <div style={{ flex: '1 1 300px' }}>
+          <div style={{ marginBottom: '5rem' }}>
+            <div style={{ marginBottom: '4rem' }}>
               <h2 style={sectionTitleStyle}>About Our Community</h2>
               <p style={sectionTextStyle}>{aboutText}</p>
             </div>
-            <div style={{ flex: '2 1 600px', backgroundColor: '#f8f9fc', borderRadius: '12px', padding: '3.5rem' }}>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '3rem 2rem' }}>
+
+            <div className="mobile-p-15" style={{ backgroundColor: '#f8f9fc', borderRadius: '20px', padding: '3.5rem' }}>
+              <h3 style={{ ...sectionTitleStyle, fontSize: '1.8rem', marginBottom: '3rem' }}>Community Highlights & Amenities</h3>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 250px), 1fr))', gap: '3rem 2rem' }}>
                 {features.map((feature, idx) => (
                   <div key={idx}>
                     <div style={{ marginBottom: '1.25rem' }}>{ICONS_MAP[feature.icon] || <CheckCircle2 size={28} color="#4f5e99" strokeWidth={1.5} />}</div>
-                    <h4 style={{ fontSize: '1.05rem', fontWeight: 700, color: '#1a2035', marginBottom: '0.5rem' }}>{feature.title}</h4>
-                    <p style={{ fontSize: '0.9rem', color: '#555', lineHeight: 1.6 }}>{feature.desc}</p>
+                    <h4 style={{ fontSize: '1.1rem', fontWeight: 700, color: '#1a2035', marginBottom: '0.6rem' }}>{feature.title}</h4>
+                    <p style={{ fontSize: '0.95rem', color: '#555', lineHeight: 1.6 }}>{feature.desc}</p>
                   </div>
                 ))}
               </div>
@@ -140,9 +154,9 @@ const CommunityDetail = ({ community, onBack, openTourModal, isTourModalOpen, cl
         {activeTab === 'Amenities' && (
           <div style={{ marginBottom: '5rem' }}>
             <h2 style={sectionTitleStyle}>Luxury Amenities</h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '2rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))', gap: '2rem' }}>
               {features.map((feature, idx) => (
-                <div key={idx} style={{ padding: '2rem', border: '1px solid #eee', borderRadius: '12px' }}>
+                <div className="mobile-p-15" key={idx} style={{ padding: '2rem', border: '1px solid #eee', borderRadius: '12px' }}>
                   <div style={{ marginBottom: '1rem' }}>{ICONS_MAP[feature.icon] || <CheckCircle2 size={24} color="#3b4b8a" />}</div>
                   <h3 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.5rem' }}>{feature.title}</h3>
                   <p style={{ fontSize: '0.9rem', color: '#666', lineHeight: 1.6 }}>{feature.desc}</p>
@@ -155,7 +169,7 @@ const CommunityDetail = ({ community, onBack, openTourModal, isTourModalOpen, cl
         {activeTab === 'Floor Plans' && (
           <div style={{ marginBottom: '5rem' }}>
             <h2 style={sectionTitleStyle}>Residences & Floor Plans</h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(400px, 1fr))', gap: '2rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 400px), 1fr))', gap: '2rem' }}>
               {floorPlans.map((plan, idx) => (
                 <div key={idx} style={{ border: '1px solid #eee', borderRadius: '12px', overflow: 'hidden' }}>
                   <img src={plan.image} alt={plan.name} style={{ width: '100%', height: '250px', objectFit: 'cover' }} />
@@ -164,7 +178,12 @@ const CommunityDetail = ({ community, onBack, openTourModal, isTourModalOpen, cl
                       <h3 style={{ fontWeight: 700, fontSize: '1.1rem' }}>{plan.name}</h3>
                       <p style={{ color: '#888', fontSize: '0.85rem' }}>{plan.size}</p>
                     </div>
-                    <button style={{ padding: '8px 16px', borderRadius: '6px', border: '1px solid #3b4b8a', background: 'none', color: '#3b4b8a', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer' }}>View Details</button>
+                    <button 
+                      onClick={() => setEnlargedImage(plan.image)}
+                      style={{ padding: '8px 16px', borderRadius: '6px', border: '1px solid #3b4b8a', background: 'none', color: '#3b4b8a', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer' }}
+                    >
+                      Enlarge Image
+                    </button>
                   </div>
                 </div>
               ))}
@@ -175,7 +194,7 @@ const CommunityDetail = ({ community, onBack, openTourModal, isTourModalOpen, cl
         {activeTab === 'Gallery' && (
           <div style={{ marginBottom: '5rem' }}>
             <h2 style={sectionTitleStyle}>Photo Gallery</h2>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '1.5rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 250px), 1fr))', gap: '1.5rem' }}>
               {gallery.map((img, idx) => (
                 <img key={idx} src={img} alt="Gallery" style={{ width: '100%', aspectRatio: '1.5', objectFit: 'cover', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }} />
               ))}
@@ -183,9 +202,17 @@ const CommunityDetail = ({ community, onBack, openTourModal, isTourModalOpen, cl
           </div>
         )}
 
-        {/* Bottom Section Quick Facts (Always visible in Overview or Footer) */}
+        {/* Bottom Section Quick Facts & Video */}
         {activeTab === 'Overview' && (
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '4rem', borderTop: '1px solid #eaeaea', paddingTop: '4rem' }}>
+          <div style={{ 
+            display: 'flex', 
+            flexWrap: 'wrap', 
+            gap: '4rem', 
+            borderTop: '1px solid #eaeaea', 
+            paddingTop: '4rem',
+            alignItems: 'flex-start'
+          }}>
+            {/* Left side: Quick Facts */}
             <div style={{ flex: '1 1 300px' }}>
               <h2 style={sectionTitleStyle}>Quick Facts</h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -195,12 +222,62 @@ const CommunityDetail = ({ community, onBack, openTourModal, isTourModalOpen, cl
                 <Fact icon={PawPrint} label="Pet Friendly" value={quickFacts.petFriendly} />
               </div>
             </div>
+
+            {/* Right side: Video Tour */}
+            <div style={{ flex: '1 1 500px' }}>
+               <h2 style={sectionTitleStyle}>Community Video Tour</h2>
+               <div style={{ 
+                 width: '100%', 
+                 aspectRatio: '16/9', 
+                 borderRadius: '20px', 
+                 overflow: 'hidden', 
+                 boxShadow: '0 20px 50px rgba(47,57,102,0.2)',
+                 backgroundColor: '#f0f2f8',
+                 border: '8px solid white'
+               }}>
+                 <iframe 
+                   width="100%" 
+                   height="100%" 
+                   src={getEmbedUrl(community?.quick_facts?.video_url) || "https://www.youtube.com/embed/dvVXX-X47DA"} 
+                   title="Community Tour Video" 
+                   frameBorder="0" 
+                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                   allowFullScreen
+                   style={{ border: 'none' }}
+                 ></iframe>
+               </div>
+            </div>
           </div>
         )}
       </main>
 
-      <CommunityFooter communityName={title} onBack={onBack} />
+      
       <TourModal isOpen={isTourModalOpen} onClose={closeTourModal} selectedCommunity={community} />
+
+      {/* Lightbox for Floor Plans */}
+      {enlargedImage && (
+        <div 
+          onClick={() => setEnlargedImage(null)}
+          style={{
+            position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
+            backgroundColor: 'rgba(0,0,0,0.85)', zIndex: 3000,
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            cursor: 'zoom-out', padding: '20px'
+          }}
+        >
+          <img 
+            src={enlargedImage} 
+            alt="Enlarged Floor Plan" 
+            style={{ maxWidth: '95%', maxHeight: '95%', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 0 40px rgba(0,0,0,0.5)' }} 
+          />
+          <button 
+            style={{ position: 'absolute', top: '30px', right: '30px', background: 'none', border: 'none', color: 'white', fontSize: '2rem', cursor: 'pointer' }}
+            onClick={() => setEnlargedImage(null)}
+          >
+            &times;
+          </button>
+        </div>
+      )}
     </div>
   );
 };
@@ -216,7 +293,7 @@ const Fact = ({ icon: Icon, label, value }) => (
 );
 
 const sectionTitleStyle = { fontFamily: "'Lora', serif", fontSize: '2.2rem', color: '#1a2035', marginBottom: '1.5rem', fontWeight: 600 };
-const sectionTextStyle = { color: '#444', lineHeight: 1.7, fontSize: '1.05rem', whiteSpace: 'pre-line' };
+const sectionTextStyle = { color: '#444', lineHeight: 1.8, fontSize: '1.2rem', whiteSpace: 'pre-line' };
 const btnPrimaryStyle = { backgroundColor: '#3b4b8a', color: 'white', padding: '12px 24px', borderRadius: '6px', border: 'none', fontSize: '1rem', fontWeight: 600, cursor: 'pointer', transition: 'background-color 0.2s', fontFamily: 'inherit' };
 const btnSecondaryStyle = { backgroundColor: 'white', color: '#3b4b8a', padding: '12px 24px', borderRadius: '6px', border: '1px solid #3b4b8a', fontSize: '1rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px', transition: 'background-color 0.2s', fontFamily: 'inherit' };
 

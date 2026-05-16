@@ -5,7 +5,17 @@ import {
   Plus, Pencil, Trash2, Search, X, Upload, MapPin,
   CheckCircle, AlertCircle, Loader2, FileText, ExternalLink
 } from 'lucide-react';
-
+const getEmbedUrl = (url) => {
+  if (!url) return '';
+  if (url.includes('youtube.com/embed/')) return url;
+  let videoId = '';
+  if (url.includes('youtube.com/watch?v=')) {
+    videoId = url.split('v=')[1]?.split('&')[0];
+  } else if (url.includes('youtu.be/')) {
+    videoId = url.split('youtu.be/')[1]?.split('?')[0];
+  }
+  return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
+};
 const LOCATIONS = [
   "Mumbai", "Pune", "Bengaluru", "Hyderabad", "Chennai",
   "Delhi NCR", "Kolkata", "Ahmedabad", "Bhubaneswar", "Goa",
@@ -531,6 +541,21 @@ export default function CommunitiesPage() {
                       <div>
                         <label style={{ fontSize: '0.7rem', color: '#666', fontWeight: 600 }}>Pet Friendly</label>
                         <input type="text" value={form.quick_facts?.petFriendly || ''} onChange={(e) => setForm({ ...form, quick_facts: { ...form.quick_facts, petFriendly: e.target.value } })} placeholder="e.g. Yes (Dogs & Cats)" style={{ ...inputStyle, padding: '6px 10px' }} />
+                      </div>
+                      <div style={{ gridColumn: 'span 2' }}>
+                        <label style={{ fontSize: '0.7rem', color: '#666', fontWeight: 600 }}>Video Tour (YouTube Embed URL)</label>
+                        <input type="text" value={form.quick_facts?.video_url || ''} onChange={(e) => setForm({ ...form, quick_facts: { ...form.quick_facts, video_url: e.target.value } })} placeholder="e.g. https://www.youtube.com/embed/..." style={{ ...inputStyle, padding: '6px 10px' }} />
+                        <iframe 
+                          width="100%" 
+                          height="200" 
+                          src={getEmbedUrl(form.quick_facts?.video_url) || "https://www.youtube.com/embed/dvVXX-X47DA"} 
+                          title="Community Tour Video" 
+                          frameBorder="0" 
+                          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                          allowFullScreen
+                          style={{ border: 'none', marginTop: '10px', borderRadius: '8px' }}
+                        ></iframe>
+                        <p style={{ margin: '4px 0 0 0', fontSize: '0.7rem', color: '#888' }}>Use the YouTube Embed format (/embed/ID) for best results.</p>
                       </div>
                     </div>
                   </div>

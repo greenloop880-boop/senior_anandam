@@ -1,18 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { Menu, X } from 'lucide-react';
 import './Navbar.css';
 import logoImg from '../assets/logo.png';
 
 const Navbar = ({ currentPage, setCurrentPage, openTourModal }) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   const goTo = (page) => {
     if (setCurrentPage) setCurrentPage(page);
+    setIsMenuOpen(false);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const legalPages = ['terms', 'privacy', 'accessibility'];
-  const isDarkPage = currentPage === 'home-modification' || legalPages.includes(currentPage);
+  // const legalPages = ['terms', 'privacy', 'accessibility'];
+  // const isDarkPage = currentPage === 'home-modification' || legalPages.includes(currentPage);
 
   const scrollToFooter = (e) => {
     e.preventDefault();
+    setIsMenuOpen(false);
     const footer = document.getElementById('footer');
     if (footer) {
       footer.scrollIntoView({ behavior: 'smooth' });
@@ -20,7 +25,7 @@ const Navbar = ({ currentPage, setCurrentPage, openTourModal }) => {
   };
 
   return (
-    <div className={`navbar-wrapper ${isDarkPage ? 'navbar-dark' : ''}`}>
+    <div className="navbar-wrapper">
       {/* Main Nav */}
       <nav className="main-nav">
         <div className="container nav-inner">
@@ -29,16 +34,24 @@ const Navbar = ({ currentPage, setCurrentPage, openTourModal }) => {
             <img src={logoImg} alt="Senior Anandam Logo" style={{ height: '45px', width: 'auto', objectFit: 'contain' }} />
           </div>
 
-          <ul className="nav-links">
-            <li><a href="#" onClick={(e) => { e.preventDefault(); goTo('home'); }} className="active">Home</a></li>
-            <li><a href="#" onClick={(e) => { e.preventDefault(); goTo('all-communities'); }}>Communities</a></li>
-            <li><a href="#" onClick={(e) => { e.preventDefault(); goTo('home-modification'); }}>Services</a></li>
-            <li><a href="#" onClick={(e) => { e.preventDefault(); goTo('about'); }}>About Us</a></li>
+          <ul className={`nav-links ${isMenuOpen ? 'mobile-open' : ''}`}>
+            <li><a href="#" onClick={(e) => { e.preventDefault(); goTo('home'); }} className={currentPage === 'home' ? 'active' : ''}>Home</a></li>
+            <li><a href="#" onClick={(e) => { e.preventDefault(); goTo('all-communities'); }} className={currentPage === 'all-communities' || currentPage === 'community-detail' ? 'active' : ''}>Communities</a></li>
+            <li><a href="#" onClick={(e) => { e.preventDefault(); goTo('home-modification'); }} className={currentPage === 'home-modification' ? 'active' : ''}>Services</a></li>
+            <li><a href="#" onClick={(e) => { e.preventDefault(); goTo('about'); }} className={currentPage === 'about' ? 'active' : ''}>About Us</a></li>
             <li><a href="#" onClick={(e) => { e.preventDefault(); goTo('home'); }}>Resources</a></li>
             <li><a href="#" onClick={scrollToFooter}>Contact</a></li>
+            <li className="mobile-only">
+              <button className="btn btn-primary w-full" onClick={() => { openTourModal(); setIsMenuOpen(false); }}>Schedule a Tour</button>
+            </li>
           </ul>
 
-          <button className="btn btn-primary" onClick={openTourModal}>Schedule a Tour</button>
+          <div className="nav-actions">
+            <button className="btn btn-primary desktop-tour-btn" onClick={openTourModal}>Schedule a Tour</button>
+            <button className="mobile-menu-btn" onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Toggle menu">
+              {isMenuOpen ? <X size={28} color="var(--primary-color)" /> : <Menu size={28} color="var(--primary-color)" />}
+            </button>
+          </div>
         </div>
       </nav>
     </div>

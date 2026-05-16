@@ -1,3 +1,4 @@
+/* ── Desktop: full-screen background hero ── */
 .hero {
   position: relative;
   display: flex;
@@ -30,7 +31,6 @@
   left: 0;
   width: 100%;
   height: 100%;
-  /* Dark gradient on the left side for text readability */
   background: linear-gradient(to right, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.3) 50%, rgba(0, 0, 0, 0) 100%);
   z-index: 2;
 }
@@ -42,7 +42,7 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  padding-top: 18vh;
+  padding-top: 8vh;
 }
 
 .hero-content {
@@ -53,7 +53,7 @@
 
 .hero-content h1 {
   font-family: var(--font-sans, system-ui, -apple-system, sans-serif);
-  font-size: 4rem;
+  font-size: clamp(2rem, 6vw, 4rem);
   color: white;
   margin-bottom: 1.5rem;
   font-weight: 700;
@@ -61,24 +61,68 @@
   line-height: 1.15;
 }
 
-
-
 .hero-search-wrapper {
   margin-top: 2.5rem;
   width: 100%;
   z-index: 20;
 }
 
+/* Mobile-only banner image (hidden on desktop) */
+.hero-mobile-img-wrapper {
+  display: none;
+}
+
+/* ── Mobile: stacked layout ── */
 @media (max-width: 768px) {
-  .hero-overlay {
-    background: linear-gradient(to bottom, rgba(16, 30, 25, 0.9) 0%, rgba(16, 30, 25, 0.7) 40%, rgba(0, 0, 0, 0) 100%);
+  /* Reset the section to a plain block flow */
+  .hero {
+    display: block;
+    min-height: unset;
+    background-color: #fff;
   }
 
+  /* Hide the absolute background wrapper */
+  .hero-bg-wrapper {
+    display: none;
+  }
+
+  /* Show the top banner image */
+  .hero-mobile-img-wrapper {
+    display: block;
+    width: 100%;
+    height: 140px;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .hero-mobile-img-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  /* Content area stacks below the image */
   .hero-container {
-    padding-bottom: 5rem;
+    position: static;
+    padding-top: 1rem;
+    padding-bottom: 1.5rem;
+  }
+
+  .hero-content {
+    color: var(--primary-color);
+    margin-top: 0;
   }
 
   .hero-content h1 {
-    font-size: 2.8rem;
+    font-size: 1.45rem;
+    color: var(--primary-color);
+    margin-bottom: 0.75rem;
+    line-height: 1.2;
+  }
+
+  .hero-search-wrapper {
+    margin-top: 0.75rem;
   }
 }

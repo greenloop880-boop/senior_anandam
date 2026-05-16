@@ -159,8 +159,8 @@
 @media (max-width: 768px) {
   .search-body {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
-    padding: 1.5rem;
+    gap: 1rem;
+    padding: 1rem;
   }
 
   .search-action {
@@ -168,14 +168,33 @@
   }
 
   .search-widget-container {
-    padding: 0 1rem;
+    padding: 0;
   }
 
   .search-tab {
-    padding: 1rem;
-    font-size: 0.9rem;
+    padding: 0.65rem 0.75rem;
+    font-size: 0.82rem;
     flex: 1;
     justify-content: center;
+  }
+
+  .field-input-group input,
+  .field-input-group select {
+    font-size: 0.85rem;
+  }
+
+  .field-input-group input::placeholder {
+    font-size: 0.85rem;
+  }
+
+  .slider-label,
+  .slider-value {
+    font-size: 0.78rem;
+  }
+
+  .btn-search-submit {
+    padding: 0.7rem 1rem;
+    font-size: 0.9rem;
   }
 }
 
@@ -287,6 +306,7 @@
     min-width: 100%;
     right: auto;
     left: 0;
+    max-width: calc(100vw - 2rem);
   }
 }
 

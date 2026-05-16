@@ -53,30 +53,6 @@ function App() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  // All communities page
-  if (currentPage === 'all-communities') {
-    return (
-      <AllCommunities
-        onBack={backFromAllCommunities}
-        openCommunity={openCommunity}
-        initialParams={searchParams}
-      />
-    );
-  }
-
-  // Community detail page — standalone, no shared navbar/footer
-  if (currentPage === 'community-detail' && selectedCommunity) {
-    return (
-      <CommunityDetail
-        community={selectedCommunity}
-        onBack={backToCommunities}
-        openTourModal={() => setIsTourModalOpen(true)}
-        isTourModalOpen={isTourModalOpen}
-        closeTourModal={() => setIsTourModalOpen(false)}
-      />
-    );
-  }
-
   return (
     <div className="app-container">
       <Navbar
@@ -95,6 +71,22 @@ function App() {
             <Communities openCommunity={openCommunity} openAllCommunities={openAllCommunities} />
             <CTA />
           </>
+        )}
+        {currentPage === 'all-communities' && (
+          <AllCommunities
+            onBack={backFromAllCommunities}
+            openCommunity={openCommunity}
+            initialParams={searchParams}
+          />
+        )}
+        {currentPage === 'community-detail' && selectedCommunity && (
+          <CommunityDetail
+            community={selectedCommunity}
+            onBack={backToCommunities}
+            openTourModal={() => setIsTourModalOpen(true)}
+            isTourModalOpen={isTourModalOpen}
+            closeTourModal={() => setIsTourModalOpen(false)}
+          />
         )}
         {currentPage === 'about' && <About />}
         {currentPage === 'home-modification' && <HomeModification />}

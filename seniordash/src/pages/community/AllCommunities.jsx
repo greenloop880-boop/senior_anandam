@@ -230,26 +230,11 @@ const AllCommunities = ({ onBack, openCommunity, initialParams }) => {
       {/* Header */}
       <div style={{
         background: 'linear-gradient(135deg, #1a2035 0%, #2f3966 100%)',
-        padding: '3rem 2rem 5rem 2rem',
+        padding: '2rem 2rem 5rem 2rem',
         position: 'relative',
       }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-          {/* Back button */}
-          <button
-            onClick={onBack}
-            style={{
-              display: 'inline-flex', alignItems: 'center', gap: '6px',
-              background: 'rgba(255,255,255,0.12)', border: '1px solid rgba(255,255,255,0.2)',
-              color: 'white', fontSize: '0.875rem', fontWeight: 600,
-              padding: '8px 18px', borderRadius: '50px', cursor: 'pointer',
-              marginBottom: '2rem', backdropFilter: 'blur(8px)',
-              transition: 'background 0.2s',
-            }}
-            onMouseOver={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.2)'}
-            onMouseOut={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.12)'}
-          >
-            <ChevronLeft size={16} /> Back to Home
-          </button>
+
 
           <span style={{
             display: 'block', fontSize: '0.75rem', fontWeight: 700,
@@ -343,7 +328,7 @@ const AllCommunities = ({ onBack, openCommunity, initialParams }) => {
         ) : (
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 320px), 1fr))',
             gap: '2rem',
           }}>
             {filtered.map((community) => (

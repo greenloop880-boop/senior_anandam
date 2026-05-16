@@ -37,7 +37,7 @@ const FloatingCTA = () => {
         </div>
         <button className="btn-advisor" onClick={scrollToContact}>
           <PhoneCall size={18} />
-          Get in touch
+          <span className="btn-advisor-text">Get in touch</span>
         </button>
         <button className="btn-close-cta" onClick={() => setIsDismissed(true)} aria-label="Close">
           <X size={24} color="#666" />

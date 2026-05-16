@@ -24,7 +24,7 @@ const FeatureHighlights = ({ features }) => {
             border: '1px solid rgba(255,255,255,0.7)',
             padding: '2.5rem 3rem',
             display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 200px), 1fr))',
             gap: '2rem',
           }}
         >

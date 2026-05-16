@@ -80,7 +80,7 @@
   .floating-cta-content {
     flex-direction: column;
     gap: 0.75rem;
-    padding: 1rem;
+    padding: 1.5rem 1rem 1rem;
     text-align: center;
   }
   
@@ -92,5 +92,15 @@
     width: 100%;
     justify-content: center;
     padding: 0.8rem;
+  }
+
+  .btn-advisor-text {
+    display: none;
+  }
+
+  .btn-close-cta {
+    top: 0.25rem;
+    right: 0.25rem;
+    transform: none;
   }
 }

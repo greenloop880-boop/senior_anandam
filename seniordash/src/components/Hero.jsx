@@ -51,8 +51,16 @@ const Hero = ({ onSearch }) => {
     return () => clearInterval(interval);
   }, [images.length]);
 
+  const currentImg = (images.length > 0 ? images[currentIndex] : null) || DEMO_HERO_IMAGES[0];
+
   return (
     <section className="hero">
+      {/* Mobile-only top banner image (hidden on desktop via CSS) */}
+      <div className="hero-mobile-img-wrapper">
+        <img src={currentImg} alt="Senior living community" />
+      </div>
+
+      {/* Desktop full-screen background */}
       <div className="hero-bg-wrapper">
         {images.map((img, idx) => (
           <img 

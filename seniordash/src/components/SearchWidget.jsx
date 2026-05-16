@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './SearchWidget.css';
-import { BedDouble, MapPin, Search, ChevronDown, Check, Home, User, Users, Star, Sun, Shield, Activity, X } from 'lucide-react';
+import { BedDouble, MapPin, Search, ChevronDown, Check, Home, User, Users, Star, Sun, Shield, Activity, X, Key } from 'lucide-react';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
 
 const DEFAULT_FACILITY_OPTIONS = [
@@ -28,7 +28,7 @@ const roomOptions = [
 ];
 
 const SearchWidget = ({ onSearch }) => {
-  const [activeTab, setActiveTab] = useState('seniorLiving');
+  const [activeTab, setActiveTab] = useState('buy');
   const [facilityOptions, setFacilityOptions] = useState(DEFAULT_FACILITY_OPTIONS);
   const [locationOptions, setLocationOptions] = useState(DEFAULT_LOCATION_OPTIONS);
   const [dynamicRoomOptions, setDynamicRoomOptions] = useState(roomOptions);
@@ -128,7 +128,8 @@ const SearchWidget = ({ onSearch }) => {
         facilities: selectedFacilities,
         rooms: selectedRooms,
         location: locationQuery,
-        maxCharge: maxCharge
+        maxCharge: maxCharge,
+        activeTab: activeTab
       });
     }
   };
@@ -138,11 +139,18 @@ const SearchWidget = ({ onSearch }) => {
       <div className="search-widget">
         <div className="search-tabs">
           <button 
-            className={`search-tab ${activeTab === 'seniorLiving' ? 'active' : ''}`}
-            onClick={() => setActiveTab('seniorLiving')}
+            className={`search-tab ${activeTab === 'buy' ? 'active' : ''}`}
+            onClick={() => setActiveTab('buy')}
           >
-            <BedDouble size={20} strokeWidth={1.5} className="tab-icon" />
-            <span>Senior Living</span>
+            <Home size={20} strokeWidth={1.5} className="tab-icon" />
+            <span>Buy</span>
+          </button>
+          <button 
+            className={`search-tab ${activeTab === 'rent' ? 'active' : ''}`}
+            onClick={() => setActiveTab('rent')}
+          >
+            <Key size={20} strokeWidth={1.5} className="tab-icon" />
+            <span>Rent</span>
           </button>
         </div>
         

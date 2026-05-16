@@ -108,8 +108,8 @@
   .testimonial-grid.single-video .testimonial-card {
     flex-direction: column;
   }
-}
-  
-  .testimonial-quote {
-    font-size: 1.5rem;
+
+  .testimonial-quote, .main-quote {
+    font-size: 1.5rem !important;
   }
+}

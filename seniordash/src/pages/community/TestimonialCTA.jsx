@@ -22,7 +22,7 @@ const TestimonialCTA = ({ testimonial, contact, onTourClick }) => {
         )}
 
         {/* Contact/CTA */}
-        <div style={{ flex: '1 1 400px', backgroundColor: '#f9f9f9', padding: '2.5rem', borderRadius: '12px' }}>
+        <div className="mobile-p-15" style={{ flex: '1 1 400px', backgroundColor: '#f9f9f9', padding: '2.5rem', borderRadius: '12px' }}>
           <h3 style={{ fontSize: '1.8rem', color: '#2f3966', marginBottom: '1rem', fontFamily: "'Lora', serif" }}>
             Ready to See for Yourself?
           </h3>
