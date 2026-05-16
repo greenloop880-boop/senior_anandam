@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { MapPin, ArrowRight, Search, SlidersHorizontal, X, ChevronLeft } from 'lucide-react';
 import { supabase, isSupabaseConfigured } from '../../lib/supabase';
+import './AllCommunities.css';
 
 const DEMO_COMMUNITIES = [
   {
@@ -228,11 +229,7 @@ const AllCommunities = ({ onBack, openCommunity, initialParams }) => {
   return (
     <div style={{ minHeight: '100vh', backgroundColor: '#f8f9fc', fontFamily: "'Inter', 'Nunito', sans-serif" }}>
       {/* Header */}
-      <div style={{
-        background: 'linear-gradient(135deg, #1a2035 0%, #2f3966 100%)',
-        padding: '2rem 2rem 5rem 2rem',
-        position: 'relative',
-      }}>
+      <div className="ac-header">
         <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
 
 
@@ -256,12 +253,8 @@ const AllCommunities = ({ onBack, openCommunity, initialParams }) => {
       </div>
 
       {/* Search + Filter Bar */}
-      <div style={{ maxWidth: '1200px', margin: '-2rem auto 0', padding: '0 2rem', position: 'relative', zIndex: 10 }}>
-        <div style={{
-          background: 'white', borderRadius: '16px',
-          boxShadow: '0 8px 40px rgba(0,0,0,0.10)',
-          padding: '1.5rem', display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center',
-        }}>
+      <div className="ac-search-bar-wrapper">
+        <div className="ac-search-box">
           {/* Search */}
           <div style={{ flex: '1 1 300px', position: 'relative' }}>
             <Search size={18} color="#9ca3af" style={{ position: 'absolute', left: '14px', top: '50%', transform: 'translateY(-50%)' }} />
@@ -311,7 +304,7 @@ const AllCommunities = ({ onBack, openCommunity, initialParams }) => {
       </div>
 
       {/* Results */}
-      <div style={{ maxWidth: '1200px', margin: '2.5rem auto', padding: '0 2rem 4rem' }}>
+      <div className="ac-results-wrapper">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
           <p style={{ color: '#666', fontSize: '0.95rem' }}>
             Showing <strong style={{ color: '#1a2035' }}>{filtered.length}</strong> communities

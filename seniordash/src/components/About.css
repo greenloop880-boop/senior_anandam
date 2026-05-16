@@ -619,6 +619,18 @@
 }
 
 @media (max-width: 768px) {
+  .about-hero-content {
+    padding: 2.5rem 1.5rem 3rem;
+  }
+
+  .about-story,
+  .about-mission,
+  .about-values,
+  .about-team,
+  .about-cta-band {
+    padding: 3.5rem 0;
+  }
+
   .about-story-grid,
   .about-mission-grid {
     grid-template-columns: 1fr;

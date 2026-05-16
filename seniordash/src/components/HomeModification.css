@@ -552,7 +552,15 @@
   }
 
   .hm-hero-left {
-    padding: 6rem 2rem 3rem;
+    padding: 2.5rem 1.5rem 2.5rem;
+  }
+
+  .hm-goals,
+  .hm-when-steps,
+  .hm-modifications,
+  .hm-services,
+  .hm-contact-strip {
+    padding: 3rem 0;
   }
 
   .hm-two-col {
