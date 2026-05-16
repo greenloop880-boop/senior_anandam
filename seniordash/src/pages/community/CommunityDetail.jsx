@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronRight, MapPin, FileText, Users, Utensils, TreePine, Calendar, HeartHandshake, ShieldCheck, Home, PawPrint, ArrowRight, CheckCircle2, BedDouble } from 'lucide-react';
 import logoImg from '../../assets/logo.png';
 import TourModal from '../../components/TourModal';
@@ -48,6 +48,10 @@ const getEmbedUrl = (url) => {
 
 const CommunityDetail = ({ community, onBack, openTourModal, isTourModalOpen, closeTourModal }) => {
   const [activeTab, setActiveTab] = useState('Overview');
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const [enlargedImage, setEnlargedImage] = useState(null);
 
   const title = community?.title || community?.name || 'The Gardens at Elm Creek';

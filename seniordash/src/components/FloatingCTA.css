@@ -78,8 +78,9 @@
 
 @media (max-width: 768px) {
   .floating-cta-wrapper {
-    bottom: 0;
-    padding-bottom: env(safe-area-inset-bottom, 0px);
+    bottom: 0 !important;
+    margin-bottom: 0 !important;
+    padding-bottom: 0 !important;
   }
 
   .floating-cta-content {
