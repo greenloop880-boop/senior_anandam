@@ -307,6 +307,32 @@
     right: auto;
     left: 0;
     max-width: calc(100vw - 2rem);
+    padding: 0.85rem;
+  }
+
+  .popover-header h4 {
+    font-size: 0.9rem;
+  }
+
+  .room-cards-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    max-height: 200px;
+  }
+
+  .room-card {
+    padding: 0.5rem 0.4rem;
+    gap: 0.3rem;
+    border-radius: 6px;
+  }
+
+  .room-name {
+    font-size: 0.72rem;
+  }
+
+  .room-icon svg {
+    width: 18px;
+    height: 18px;
   }
 }
 

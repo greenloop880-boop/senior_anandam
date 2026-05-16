@@ -110,12 +110,14 @@ const SearchWidget = ({ onSearch }) => {
     setSelectedFacilities(prev => 
       prev.includes(facility) ? prev.filter(f => f !== facility) : [...prev, facility]
     );
+    setIsFacilityOpen(false);
   };
 
   const toggleRoom = (room) => {
     setSelectedRooms(prev => 
       prev.includes(room) ? prev.filter(r => r !== room) : [...prev, room]
     );
+    setIsRoomOpen(false);
   };
 
   const filteredLocations = locationOptions.filter(loc => 

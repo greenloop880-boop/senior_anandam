@@ -1,10 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Menu, X } from 'lucide-react';
 import './Navbar.css';
 import logoImg from '../assets/logo.png';
 
 const Navbar = ({ currentPage, setCurrentPage, openTourModal }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [isMenuOpen]);
 
   const goTo = (page) => {
     if (setCurrentPage) setCurrentPage(page);
@@ -26,6 +37,12 @@ const Navbar = ({ currentPage, setCurrentPage, openTourModal }) => {
 
   return (
     <div className="navbar-wrapper">
+      {/* Mobile Menu Overlay */}
+      <div 
+        className={`mobile-menu-overlay ${isMenuOpen ? 'open' : ''}`}
+        onClick={() => setIsMenuOpen(false)}
+      />
+
       {/* Main Nav */}
       <nav className="main-nav">
         <div className="container nav-inner">
@@ -35,6 +52,12 @@ const Navbar = ({ currentPage, setCurrentPage, openTourModal }) => {
           </div>
 
           <ul className={`nav-links ${isMenuOpen ? 'mobile-open' : ''}`}>
+            {/* Drawer Close Button */}
+            <li className="mobile-only drawer-close-wrapper">
+              <button className="mobile-close-btn" onClick={() => setIsMenuOpen(false)} aria-label="Close menu">
+                <X size={28} color="white" />
+              </button>
+            </li>
             <li><a href="#" onClick={(e) => { e.preventDefault(); goTo('home'); }} className={currentPage === 'home' ? 'active' : ''}>Home</a></li>
             <li><a href="#" onClick={(e) => { e.preventDefault(); goTo('all-communities'); }} className={currentPage === 'all-communities' || currentPage === 'community-detail' ? 'active' : ''}>Communities</a></li>
             <li><a href="#" onClick={(e) => { e.preventDefault(); goTo('home-modification'); }} className={currentPage === 'home-modification' ? 'active' : ''}>Services</a></li>

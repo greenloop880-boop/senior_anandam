@@ -249,3 +249,157 @@
     gap: 1rem;
   }
 }
+
+/* Mobile banner hidden on desktop */
+.contact-mobile-banner {
+  display: none;
+}
+
+/* ── Mobile: stacked banner + form layout ── */
+@media (max-width: 768px) {
+  /* Reset section to plain block */
+  .contact-section {
+    display: block;
+    min-height: unset;
+    padding: 0;
+    background-image: none !important;
+    background-color: #f6f6f4;
+  }
+
+  /* Hide the overlay on mobile (no bg image) */
+  .contact-overlay {
+    display: none;
+  }
+
+  /* Banner: use pseudo-element or inline style on a new wrapper */
+  .contact-mobile-banner {
+    position: relative;
+    width: 100%;
+    height: 220px;
+    overflow: hidden;
+    display: block;
+  }
+
+  .contact-mobile-banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    display: block;
+  }
+
+  /* Dark gradient overlay on the banner image */
+  .contact-mobile-banner::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.72) 100%);
+  }
+
+  /* Heading sits inside the banner, on top of the gradient */
+  .contact-mobile-banner-text {
+    position: absolute;
+    bottom: 1.25rem;
+    left: 1.25rem;
+    right: 1.25rem;
+    z-index: 2;
+    color: white;
+  }
+
+  .contact-mobile-banner-text h2 {
+    font-family: var(--font-serif);
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: white;
+    margin-bottom: 0.25rem;
+    line-height: 1.2;
+  }
+
+  .contact-mobile-banner-text .accent-line {
+    margin-bottom: 0;
+  }
+
+  /* Container becomes a plain padded block */
+  .contact-container {
+    flex-direction: column;
+    gap: 0;
+    padding: 1.25rem 1rem 2rem;
+  }
+
+  /* Info col: just the description + phone, no color (white bg) */
+  .contact-info-col {
+    padding-right: 0;
+    color: var(--text-dark);
+    margin-bottom: 1.25rem;
+  }
+
+  /* Hide the heading inside info-col on mobile (shown in banner instead) */
+  .contact-info-col .contact-heading,
+  .contact-info-col .accent-line {
+    display: none;
+  }
+
+  .contact-text p {
+    color: var(--text-muted);
+    font-size: 0.88rem;
+  }
+
+  .phone-label {
+    color: var(--text-muted);
+  }
+
+  .phone-number {
+    font-size: 1.1rem;
+    color: var(--primary-color);
+  }
+
+  .phone-icon {
+    color: var(--primary-color);
+  }
+
+  /* Form inputs: use light styling since bg is now white */
+  .contact-form input,
+  .contact-form select,
+  .contact-form textarea {
+    background-color: white;
+    border: 1px solid #d0d0d0;
+    color: var(--text-dark);
+  }
+
+  .contact-form input::placeholder,
+  .contact-form textarea::placeholder {
+    color: #999;
+  }
+
+  .contact-form select:invalid {
+    color: #999;
+  }
+
+  .contact-form select option {
+    color: #333;
+  }
+
+  .contact-form input:focus,
+  .contact-form select:focus,
+  .contact-form textarea:focus {
+    border-color: var(--primary-color);
+    background-color: white;
+  }
+
+  .form-success-state {
+    color: var(--text-dark);
+  }
+
+  .form-success-state h3 {
+    color: var(--text-dark);
+  }
+
+  .form-success-state p {
+    color: var(--text-muted);
+  }
+
+  .contact-form-col {
+    flex: 1;
+    margin-left: 0;
+  }
+}

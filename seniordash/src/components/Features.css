@@ -65,5 +65,19 @@
 @media (max-width: 576px) {
   .features-grid {
     grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .feature-card {
+    padding: 0.75rem 1rem;
+  }
+
+  .feature-icon {
+    margin-bottom: 0.6rem;
+  }
+
+  .feature-title {
+    font-size: 1rem;
+    margin-bottom: 0.4rem;
   }
 }

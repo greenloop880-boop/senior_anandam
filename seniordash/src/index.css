@@ -131,6 +131,12 @@ h6 {
   padding: 5rem 0;
 }
 
+@media (max-width: 768px) {
+  .section-padding {
+    padding: 2.5rem 0;
+  }
+}
+
 /* Animations */
 @keyframes fadeIn {
   from {
@@ -146,4 +152,83 @@ h6 {
 
 .animate-fade-in {
   animation: fadeIn 0.8s ease forwards;
+}
+
+.community-hero-layout {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3rem;
+  margin-bottom: 3rem;
+}
+
+/* Community Detail Image Helpers */
+.community-hero-img {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+}
+
+.floor-plan-img {
+  width: 100%;
+  height: 250px;
+  object-fit: contain;
+  background-color: #f8f9fc;
+}
+
+.gallery-img {
+  width: 100%;
+  aspect-ratio: auto; /* Allow natural rectangular proportions */
+  height: auto;
+  border-radius: 8px; /* Slightly less rounded to look like a full photo */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+@media (max-width: 768px) {
+  .community-hero-layout {
+    gap: 1.25rem; /* Reduce gap between image and text significantly */
+    margin-bottom: 2rem;
+  }
+  .community-hero-img {
+    height: auto;
+    aspect-ratio: 4/3;
+    border-radius: 0;
+    width: calc(100% + 3rem) !important;
+    max-width: calc(100% + 3rem) !important;
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+    display: block;
+  }
+  .floor-plan-img {
+    height: auto;
+    aspect-ratio: 4/3;
+    object-fit: contain;
+  }
+  /* gallery-img handles itself without media queries now */
+
+  .community-tabs-container {
+    margin-bottom: 2rem !important;
+    gap: 1.5rem !important;
+  }
+  .community-tab-content {
+    margin-bottom: 2.5rem !important;
+  }
+  .community-section-block {
+    margin-bottom: 2rem !important;
+  }
+}
+
+.community-tabs-container {
+  border-bottom: 1px solid #eee;
+  margin-bottom: 4rem;
+  display: flex;
+  gap: 2.5rem;
+  overflow-x: auto;
+}
+.community-tab-content {
+  margin-bottom: 5rem;
+}
+.community-section-block {
+  margin-bottom: 4rem;
 }

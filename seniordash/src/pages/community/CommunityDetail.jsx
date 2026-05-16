@@ -86,13 +86,13 @@ const CommunityDetail = ({ community, onBack, openTourModal, isTourModalOpen, cl
         </div>
 
         {/* Hero Section */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3rem', marginBottom: '3rem' }}>
+        <div className="community-hero-layout">
           {/* Image */}
           <div style={{ flex: '1 1 500px' }}>
             <img 
               src={image} 
               alt={title} 
-              style={{ width: '100%', height: '400px', objectFit: 'cover', borderRadius: '12px', boxShadow: '0 4px 20px rgba(0,0,0,0.08)' }} 
+              className="community-hero-img" 
             />
           </div>
           
@@ -116,7 +116,7 @@ const CommunityDetail = ({ community, onBack, openTourModal, isTourModalOpen, cl
         </div>
 
         {/* Navigation Tabs */}
-        <div className="hide-scrollbar" style={{ borderBottom: '1px solid #eee', marginBottom: '4rem', display: 'flex', gap: '2.5rem', overflowX: 'auto' }}>
+        <div className="hide-scrollbar community-tabs-container">
           {tabs.map((tab) => (
             <div key={tab} onClick={() => setActiveTab(tab)} style={{
                 paddingBottom: '1rem', cursor: 'pointer', fontWeight: 600, fontSize: '0.95rem',
@@ -130,8 +130,8 @@ const CommunityDetail = ({ community, onBack, openTourModal, isTourModalOpen, cl
         </div>
 
         {activeTab === 'Overview' && (
-          <div style={{ marginBottom: '5rem' }}>
-            <div style={{ marginBottom: '4rem' }}>
+          <div className="community-tab-content">
+            <div className="community-section-block">
               <h2 style={sectionTitleStyle}>About Our Community</h2>
               <p style={sectionTextStyle}>{aboutText}</p>
             </div>
@@ -152,7 +152,7 @@ const CommunityDetail = ({ community, onBack, openTourModal, isTourModalOpen, cl
         )}
 
         {activeTab === 'Amenities' && (
-          <div style={{ marginBottom: '5rem' }}>
+          <div className="community-tab-content">
             <h2 style={sectionTitleStyle}>Luxury Amenities</h2>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 280px), 1fr))', gap: '2rem' }}>
               {features.map((feature, idx) => (
@@ -167,12 +167,12 @@ const CommunityDetail = ({ community, onBack, openTourModal, isTourModalOpen, cl
         )}
 
         {activeTab === 'Floor Plans' && (
-          <div style={{ marginBottom: '5rem' }}>
+          <div className="community-tab-content">
             <h2 style={sectionTitleStyle}>Residences & Floor Plans</h2>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 400px), 1fr))', gap: '2rem' }}>
               {floorPlans.map((plan, idx) => (
                 <div key={idx} style={{ border: '1px solid #eee', borderRadius: '12px', overflow: 'hidden' }}>
-                  <img src={plan.image} alt={plan.name} style={{ width: '100%', height: '250px', objectFit: 'cover' }} />
+                  <img src={plan.image} alt={plan.name} className="floor-plan-img" />
                   <div style={{ padding: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <div>
                       <h3 style={{ fontWeight: 700, fontSize: '1.1rem' }}>{plan.name}</h3>
@@ -192,11 +192,11 @@ const CommunityDetail = ({ community, onBack, openTourModal, isTourModalOpen, cl
         )}
 
         {activeTab === 'Gallery' && (
-          <div style={{ marginBottom: '5rem' }}>
+          <div className="community-tab-content">
             <h2 style={sectionTitleStyle}>Photo Gallery</h2>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(min(100%, 250px), 1fr))', gap: '1.5rem' }}>
               {gallery.map((img, idx) => (
-                <img key={idx} src={img} alt="Gallery" style={{ width: '100%', aspectRatio: '1.5', objectFit: 'cover', borderRadius: '12px', boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }} />
+                <img key={idx} src={img} alt="Gallery" className="gallery-img" />
               ))}
             </div>
           </div>

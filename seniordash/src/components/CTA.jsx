@@ -193,11 +193,22 @@ const CTA = () => {
     fetchCtaBg();
   }, []);
 
-  const backgroundStyle = bgImage ? { backgroundImage: `url(${bgImage})` } : {};
+  const displayImage = bgImage || 'https://images.unsplash.com/photo-1516156008625-3a9d6067fab5?auto=format&fit=crop&w=1200&q=80';
+  const backgroundStyle = bgImage ? { backgroundImage: `url(${bgImage})` } : { backgroundImage: `url(${displayImage})` };
 
   return (
     <section id="get-in-touch" className="contact-section" style={backgroundStyle}>
       <div className="contact-overlay"></div>
+
+      {/* Mobile-only: banner image with heading overlaid */}
+      <div className="contact-mobile-banner">
+        <img src={displayImage} alt="Get in Touch" />
+        <div className="contact-mobile-banner-text">
+          <h2>Get in Touch to Learn More</h2>
+          <div className="accent-line"></div>
+        </div>
+      </div>
+
       <div className="container contact-container">
 
         {/* Left Column: Information */}
