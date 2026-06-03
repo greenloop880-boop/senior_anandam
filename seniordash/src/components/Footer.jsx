@@ -61,7 +61,7 @@ const Footer = ({ setCurrentPage }) => {
             <ul className="footer-contact">
               <li>
                 <Phone size={16} className="contact-icon" />
-                <span>8144917996, 9937291203</span>
+                <span>9937291203</span>
               </li>
               <li>
                 <Mail size={16} className="contact-icon" />
@@ -69,7 +69,7 @@ const Footer = ({ setCurrentPage }) => {
               </li>
               <li>
                 <MapPin size={16} className="contact-icon" />
-                <span>1234 Patia<br />Bhubaneswar, Odisha 751003</span>
+                <span>101 Dharma Arched<br />Bhubaneswar, Odisha 751003</span>
               </li>
             </ul>
           </div>

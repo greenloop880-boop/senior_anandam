@@ -30,7 +30,7 @@ const Hero = ({ onSearch }) => {
           .select('value')
           .eq('key', 'hero_images')
           .single();
-          
+
         if (!error && data?.value && Array.isArray(data.value) && data.value.length > 0) {
           setImages(data.value);
           // Save to cache for the next reload
@@ -63,10 +63,10 @@ const Hero = ({ onSearch }) => {
       {/* Desktop full-screen background */}
       <div className="hero-bg-wrapper">
         {images.map((img, idx) => (
-          <img 
+          <img
             key={idx}
-            src={img} 
-            alt="Senior living community" 
+            src={img}
+            alt="Senior living community"
             className={`hero-bg-img ${idx === currentIndex ? 'active' : ''}`}
             style={{
               opacity: idx === currentIndex ? 1 : 0,
@@ -85,7 +85,7 @@ const Hero = ({ onSearch }) => {
 
       <div className="container hero-container" style={{ position: 'relative', zIndex: 10 }}>
         <div className="hero-content">
-          <h1>Find Your Perfect<br />Place to Thrive.</h1>
+          <h1>Explore senior lifestyle<br />All at one place.</h1>
 
           <div className="hero-search-wrapper">
             <SearchWidget onSearch={onSearch} />
