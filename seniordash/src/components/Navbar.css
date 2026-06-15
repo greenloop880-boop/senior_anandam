@@ -232,3 +232,17 @@
 .w-full {
   width: 100%;
 }
+
+.nav-links a.shop-now-highlight {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #d4af37 !important; /* Premium Gold */
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.nav-links a.shop-now-highlight:hover {
+  color: #b5952f !important;
+  transform: translateY(-2px);
+}

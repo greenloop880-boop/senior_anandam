@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ArrowUpRight } from 'lucide-react';
 import './Navbar.css';
 import logoImg from '../assets/logo.png';
 
@@ -62,7 +62,8 @@ const Navbar = ({ currentPage, setCurrentPage, openTourModal }) => {
             <li><a href="#" onClick={(e) => { e.preventDefault(); goTo('all-communities'); }} className={currentPage === 'all-communities' || currentPage === 'community-detail' ? 'active' : ''}>Communities</a></li>
             <li><a href="#" onClick={(e) => { e.preventDefault(); goTo('home-modification'); }} className={currentPage === 'home-modification' ? 'active' : ''}>Services</a></li>
             <li><a href="#" onClick={(e) => { e.preventDefault(); goTo('about'); }} className={currentPage === 'about' ? 'active' : ''}>About Us</a></li>
-            <li><a href="#" onClick={(e) => { e.preventDefault(); goTo('home'); }}>Resources</a></li>
+            <li><a href="https://stately-treacle-b7a6bf.netlify.app/" target="_blank" rel="noopener noreferrer">HealthLive</a></li>
+            <li><a href="https://senioranandam.com" target="_blank" rel="noopener noreferrer" className="shop-now-highlight">Shop Now <ArrowUpRight size={18} /></a></li>
             <li><a href="#" onClick={scrollToFooter}>Contact</a></li>
             <li className="mobile-only">
               <button className="btn btn-primary w-full" onClick={() => { openTourModal(); setIsMenuOpen(false); }}>Schedule a Tour</button>
