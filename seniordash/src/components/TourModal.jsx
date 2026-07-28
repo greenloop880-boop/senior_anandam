@@ -70,6 +70,11 @@ const TourModal = ({ isOpen, onClose, selectedCommunity }) => {
         <div className="modal-body">
           <div className="modal-header">
             <h2>Schedule a Tour</h2>
+            {selectedCommunity && (
+              <p style={{ margin: '6px 0 0', fontSize: '0.9rem', color: '#6366f1', fontWeight: 600 }}>
+                📍 {selectedCommunity.title || selectedCommunity.name}
+              </p>
+            )}
           </div>
 
           {submitted ? (

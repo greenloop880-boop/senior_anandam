@@ -93,8 +93,16 @@ const Stars = ({ rating }) => (
   </span>
 );
 
+const formatLocation = (c) => {
+  if (c?.address && (c.address.area || c.address.city || c.address.state || c.address.pincode)) {
+    return [c.address.area, c.address.city, c.address.state, c.address.pincode].filter(Boolean).join(', ');
+  }
+  return c?.location || '';
+};
+
 const CommunityCard = ({ community, onSelect }) => {
   const [hovered, setHovered] = useState(false);
+  const locationString = formatLocation(community);
   return (
     <div
       onMouseEnter={() => setHovered(true)}
@@ -153,9 +161,9 @@ const CommunityCard = ({ community, onSelect }) => {
         <h3 style={{ fontFamily: "'Lora', serif", fontSize: '1.25rem', fontWeight: 700, color: '#1a2035', marginBottom: '0.4rem' }}>
           {community.title}
         </h3>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '5px', color: '#666', fontSize: '0.85rem', marginBottom: '0.75rem' }}>
-          <MapPin size={13} style={{ flexShrink: 0 }} />
-          <span>{community.location}</span>
+        <div style={{ display: 'flex', alignItems: 'flex-start', gap: '5px', color: '#666', fontSize: '0.85rem', marginBottom: '0.75rem', lineHeight: 1.4 }}>
+          <MapPin size={13} style={{ flexShrink: 0, marginTop: '3px' }} />
+          <span>{locationString}</span>
         </div>
         <p style={{ fontSize: '0.9rem', color: '#555', lineHeight: 1.6, marginBottom: '1rem', flex: 1 }}>
           {community.description}
@@ -222,7 +230,7 @@ const AllCommunities = ({ onBack, openCommunity, initialParams }) => {
   const filtered = communities.filter((c) => {
     const matchType = activeType === 'All' || c.type === activeType;
     const matchSearch = c.title.toLowerCase().includes(search.toLowerCase()) ||
-      c.location.toLowerCase().includes(search.toLowerCase());
+      formatLocation(c).toLowerCase().includes(search.toLowerCase());
     return matchType && matchSearch;
   });
 

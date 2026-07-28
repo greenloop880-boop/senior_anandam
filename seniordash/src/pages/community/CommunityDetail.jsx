@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronRight, MapPin, FileText, Users, Utensils, TreePine, Calendar, HeartHandshake, ShieldCheck, Home, PawPrint, ArrowRight, CheckCircle2, BedDouble } from 'lucide-react';
+import { ChevronRight, MapPin, FileText, Users, Utensils, TreePine, Calendar, HeartHandshake, ShieldCheck, Home, PawPrint, ArrowRight, CheckCircle2, BedDouble, ExternalLink } from 'lucide-react';
+import { supabase, isSupabaseConfigured } from '../../lib/supabase';
 import logoImg from '../../assets/logo.png';
-import TourModal from '../../components/TourModal';
 
 // Fallback features if none provided in DB
 const DEFAULT_FEATURES = [
@@ -46,19 +46,66 @@ const getEmbedUrl = (url) => {
   return videoId ? `https://www.youtube.com/embed/${videoId}` : url;
 };
 
-const CommunityDetail = ({ community, onBack, openTourModal, isTourModalOpen, closeTourModal }) => {
+const CommunityDetail = ({ community: initialCommunity, onBack, openTourModal, isTourModalOpen, closeTourModal }) => {
+  const [community, setCommunity] = useState(initialCommunity);
   const [activeTab, setActiveTab] = useState('Overview');
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
   const [enlargedImage, setEnlargedImage] = useState(null);
+  const [validTypes, setValidTypes] = useState(null);
+
+  useEffect(() => {
+    async function fetchLatestCommunity() {
+      if (initialCommunity?.id && isSupabaseConfigured) {
+        try {
+          const { data, error } = await supabase.from('communities').select('*').eq('id', initialCommunity.id).single();
+          if (data && !error) {
+            setCommunity(data);
+            // Optionally update sessionStorage so parent also has the latest
+            sessionStorage.setItem('seniorDash_selectedCommunity', JSON.stringify(data));
+          }
+        } catch (e) {
+          console.error('Failed to fetch latest community data');
+        }
+      }
+    }
+    fetchLatestCommunity();
+  }, [initialCommunity?.id]);
+
+  useEffect(() => {
+    async function fetchTypes() {
+      if (!isSupabaseConfigured) {
+        setValidTypes([]);
+        return;
+      }
+      try {
+        const { data } = await supabase.from('custom_types').select('key');
+        if (data) {
+          setValidTypes(data.map(d => d.key));
+        } else {
+          setValidTypes([]);
+        }
+      } catch (err) {
+        console.error('Error fetching valid types:', err);
+        setValidTypes([]);
+      }
+    }
+    fetchTypes();
+  }, []);
 
   const title = community?.title || community?.name || 'The Gardens at Elm Creek';
-  const location = community?.location || 'Maplewood, CA';
+  const location = (() => {
+    if (community?.address && (community.address.area || community.address.city || community.address.state || community.address.pincode)) {
+      return [community.address.area, community.address.city, community.address.state, community.address.pincode].filter(Boolean).join(', ');
+    }
+    return community?.location || 'Maplewood, CA';
+  })();
+  const mapUrl = community?.address?.map_url || '';
   const description = community?.description || 'A welcoming senior living community surrounded by nature, designed for comfort, connection, and peace of mind.';
   const image = community?.image || community?.heroImage || 'https://images.unsplash.com/photo-1516156008625-3a9d6067fab5?auto=format&fit=crop&w=1200&q=80';
-  
+
   // Dynamic fields from DB
   const features = community?.amenities || DEFAULT_FEATURES;
   const gallery = community?.gallery || DEFAULT_GALLERY;
@@ -71,35 +118,54 @@ const CommunityDetail = ({ community, onBack, openTourModal, isTourModalOpen, cl
     petFriendly: 'Yes'
   };
 
+  if (community?.type && !quickFacts.type) quickFacts.type = community.type;
+
+  const standardQuickFactKeys = ['residences', 'yearOpened', 'petFriendly', 'video_url', 'pet_friendly'];
+  const customBadges = [];
+  if (community?.badge) customBadges.push({ label: 'Badge', value: community.badge });
+  if (quickFacts.type) customBadges.push({ label: 'Facility Type', value: quickFacts.type });
+
+  Object.entries(quickFacts).forEach(([key, val]) => {
+    if (!standardQuickFactKeys.includes(key) && key !== 'type' && key !== 'badge' && val) {
+      // Only show badges once validTypes is loaded, and only if the key is valid
+      if (validTypes !== null && validTypes.includes(key)) {
+        customBadges.push({
+          label: key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+          value: val
+        });
+      }
+    }
+  });
+
   const tabs = ['Overview', 'Amenities', 'Floor Plans', 'Gallery'];
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#ffffff', fontFamily: "'Inter', 'Nunito', sans-serif", color: '#333' }}>
-      
-      
+
+
       {/* Main Content Container */}
       <main className="mobile-p-15" style={{ maxWidth: '1200px', margin: '0 auto', padding: '40px 2rem 4rem 2rem' }}>
-        
+
         {/* Breadcrumb */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.85rem', color: '#666', marginBottom: '2rem' }}>
-          <span style={{ cursor: 'pointer' }} onClick={onBack}>Home</span>
-          <ChevronRight size={14} />
-          <span style={{ cursor: 'pointer' }} onClick={onBack}>Communities</span>
-          <ChevronRight size={14} />
-          <span style={{ color: '#2f3966', fontWeight: '600' }}>{title}</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '0.82rem', color: '#666', marginBottom: '1.5rem', overflow: 'hidden', whiteSpace: 'nowrap', minWidth: 0 }}>
+          <span style={{ cursor: 'pointer', flexShrink: 0 }} onClick={onBack}>Home</span>
+          <ChevronRight size={13} style={{ flexShrink: 0 }} />
+          <span style={{ cursor: 'pointer', flexShrink: 0 }} onClick={onBack}>Communities</span>
+          <ChevronRight size={13} style={{ flexShrink: 0 }} />
+          <span style={{ color: '#2f3966', fontWeight: '600', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', minWidth: 0 }}>{title}</span>
         </div>
 
         {/* Hero Section */}
         <div className="community-hero-layout">
           {/* Image */}
           <div style={{ flex: '1 1 500px' }}>
-            <img 
-              src={image} 
-              alt={title} 
-              className="community-hero-img" 
+            <img
+              src={image}
+              alt={title}
+              className="community-hero-img"
             />
           </div>
-          
+
           {/* Details */}
           <div style={{ flex: '1 1 400px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <h1 style={{ fontFamily: "'Lora', serif", fontSize: '3rem', color: '#1a2035', marginBottom: '1rem', lineHeight: 1.15 }}>
@@ -109,12 +175,74 @@ const CommunityDetail = ({ community, onBack, openTourModal, isTourModalOpen, cl
               <MapPin size={18} strokeWidth={2} />
               <span>{location}</span>
             </div>
+
+            {customBadges.length > 0 && (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '12px', marginBottom: '2rem' }}>
+                {customBadges.map((badge, idx) => (
+                  <div key={idx} style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    background: '#ffffff',
+                    border: '1px solid #e2e8f0',
+                    borderRadius: '50px',
+                    padding: '4px',
+                    boxShadow: '0 2px 10px rgba(15, 23, 42, 0.04)',
+                    transition: 'transform 0.2s, box-shadow 0.2s',
+                    cursor: 'default'
+                  }}
+                    onMouseOver={(e) => {
+                      e.currentTarget.style.transform = 'translateY(-2px)';
+                      e.currentTarget.style.boxShadow = '0 4px 14px rgba(15, 23, 42, 0.08)';
+                    }}
+                    onMouseOut={(e) => {
+                      e.currentTarget.style.transform = 'translateY(0)';
+                      e.currentTarget.style.boxShadow = '0 2px 10px rgba(15, 23, 42, 0.04)';
+                    }}>
+                    <span style={{
+                      background: '#f8fafc',
+                      color: '#64748b',
+                      padding: '5px 12px',
+                      borderRadius: '50px',
+                      fontSize: '0.68rem',
+                      fontWeight: 700,
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.06em',
+                      border: '1px solid #f1f5f9'
+                    }}>
+                      {badge.label}
+                    </span>
+                    <span style={{
+                      padding: '0 14px 0 10px',
+                      color: '#0f172a',
+                      fontSize: '0.85rem',
+                      fontWeight: 700
+                    }}>
+                      {badge.value}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+
             <p style={{ fontSize: '1.1rem', color: '#444', lineHeight: 1.6, marginBottom: '2.5rem' }}>
               {description}
             </p>
             <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
               <button onClick={openTourModal} style={btnPrimaryStyle}>Schedule a Tour</button>
-              <button style={btnSecondaryStyle}>Download Brochure <FileText size={18} /></button>
+              {mapUrl && (
+                <a href={mapUrl} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+                  <button style={btnSecondaryStyle}>View on Map <MapPin size={18} /></button>
+                </a>
+              )}
+              {community?.brochure_url ? (
+                <a href={community.brochure_url} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
+                  <button style={{ ...btnSecondaryStyle, pointerEvents: 'none' }}>Download Brochure <FileText size={18} /></button>
+                </a>
+              ) : (
+                <button style={{ ...btnSecondaryStyle, opacity: 0.5, cursor: 'not-allowed' }} disabled title="No brochure available">
+                  Download Brochure <FileText size={18} />
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -123,11 +251,11 @@ const CommunityDetail = ({ community, onBack, openTourModal, isTourModalOpen, cl
         <div className="hide-scrollbar community-tabs-container">
           {tabs.map((tab) => (
             <div key={tab} onClick={() => setActiveTab(tab)} style={{
-                paddingBottom: '1rem', cursor: 'pointer', fontWeight: 600, fontSize: '0.95rem',
-                color: activeTab === tab ? '#3b4b8a' : '#666',
-                borderBottom: activeTab === tab ? '3px solid #3b4b8a' : '3px solid transparent',
-                whiteSpace: 'nowrap', transition: 'all 0.2s', marginBottom: '-1px'
-              }}>
+              paddingBottom: '1rem', cursor: 'pointer', fontWeight: 600, fontSize: '0.95rem',
+              color: activeTab === tab ? '#3b4b8a' : '#666',
+              borderBottom: activeTab === tab ? '3px solid #3b4b8a' : '3px solid transparent',
+              whiteSpace: 'nowrap', transition: 'all 0.2s', marginBottom: '-1px'
+            }}>
               {tab}
             </div>
           ))}
@@ -182,7 +310,7 @@ const CommunityDetail = ({ community, onBack, openTourModal, isTourModalOpen, cl
                       <h3 style={{ fontWeight: 700, fontSize: '1.1rem' }}>{plan.name}</h3>
                       <p style={{ color: '#888', fontSize: '0.85rem' }}>{plan.size}</p>
                     </div>
-                    <button 
+                    <button
                       onClick={() => setEnlargedImage(plan.image)}
                       style={{ padding: '8px 16px', borderRadius: '6px', border: '1px solid #3b4b8a', background: 'none', color: '#3b4b8a', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer' }}
                     >
@@ -208,11 +336,11 @@ const CommunityDetail = ({ community, onBack, openTourModal, isTourModalOpen, cl
 
         {/* Bottom Section Quick Facts & Video */}
         {activeTab === 'Overview' && (
-          <div style={{ 
-            display: 'flex', 
-            flexWrap: 'wrap', 
-            gap: '4rem', 
-            borderTop: '1px solid #eaeaea', 
+          <div style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '4rem',
+            borderTop: '1px solid #eaeaea',
             paddingTop: '4rem',
             alignItems: 'flex-start'
           }}>
@@ -220,47 +348,54 @@ const CommunityDetail = ({ community, onBack, openTourModal, isTourModalOpen, cl
             <div style={{ flex: '1 1 300px' }}>
               <h2 style={sectionTitleStyle}>Quick Facts</h2>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-                <Fact icon={Home} label="Community Type" value={quickFacts.type} />
-                <Fact icon={Users} label="Number of Residences" value={quickFacts.residences} />
-                <Fact icon={Calendar} label="Year Opened" value={quickFacts.yearOpened} />
-                <Fact icon={PawPrint} label="Pet Friendly" value={quickFacts.petFriendly} />
+                {Object.entries(quickFacts).map(([key, val]) => {
+                  if (!standardQuickFactKeys.includes(key)) return null;
+                  if (key === 'video_url') return null;
+
+                  let icon = Home;
+                  let label = key;
+
+                  if (key === 'residences') { icon = Users; label = 'Number of Residences'; }
+                  else if (key === 'yearOpened') { icon = Calendar; label = 'Year Opened'; }
+                  else if (key === 'petFriendly' || key === 'pet_friendly') { icon = PawPrint; label = 'Pet Friendly'; }
+
+                  return <Fact key={key} icon={icon} label={label} value={val} />;
+                })}
               </div>
             </div>
 
             {/* Right side: Video Tour */}
             <div style={{ flex: '1 1 500px' }}>
-               <h2 style={sectionTitleStyle}>Community Video Tour</h2>
-               <div style={{ 
-                 width: '100%', 
-                 aspectRatio: '16/9', 
-                 borderRadius: '20px', 
-                 overflow: 'hidden', 
-                 boxShadow: '0 20px 50px rgba(47,57,102,0.2)',
-                 backgroundColor: '#f0f2f8',
-                 border: '8px solid white'
-               }}>
-                 <iframe 
-                   width="100%" 
-                   height="100%" 
-                   src={getEmbedUrl(community?.quick_facts?.video_url) || "https://www.youtube.com/embed/dvVXX-X47DA"} 
-                   title="Community Tour Video" 
-                   frameBorder="0" 
-                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                   allowFullScreen
-                   style={{ border: 'none' }}
-                 ></iframe>
-               </div>
+              <h2 style={sectionTitleStyle}>Community Video Tour</h2>
+              <div style={{
+                width: '100%',
+                aspectRatio: '16/9',
+                borderRadius: '20px',
+                overflow: 'hidden',
+                boxShadow: '0 20px 50px rgba(47,57,102,0.2)',
+                backgroundColor: '#f0f2f8',
+                border: '8px solid white'
+              }}>
+                <iframe
+                  width="100%"
+                  height="100%"
+                  src={getEmbedUrl(community?.quick_facts?.video_url) || "https://www.youtube.com/embed/dvVXX-X47DA"}
+                  title="Community Tour Video"
+                  frameBorder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  style={{ border: 'none' }}
+                ></iframe>
+              </div>
             </div>
           </div>
         )}
       </main>
 
-      
-      <TourModal isOpen={isTourModalOpen} onClose={closeTourModal} selectedCommunity={community} />
 
       {/* Lightbox for Floor Plans */}
       {enlargedImage && (
-        <div 
+        <div
           onClick={() => setEnlargedImage(null)}
           style={{
             position: 'fixed', top: 0, left: 0, width: '100vw', height: '100vh',
@@ -269,12 +404,12 @@ const CommunityDetail = ({ community, onBack, openTourModal, isTourModalOpen, cl
             cursor: 'zoom-out', padding: '20px'
           }}
         >
-          <img 
-            src={enlargedImage} 
-            alt="Enlarged Floor Plan" 
-            style={{ maxWidth: '95%', maxHeight: '95%', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 0 40px rgba(0,0,0,0.5)' }} 
+          <img
+            src={enlargedImage}
+            alt="Enlarged Floor Plan"
+            style={{ maxWidth: '95%', maxHeight: '95%', objectFit: 'contain', borderRadius: '8px', boxShadow: '0 0 40px rgba(0,0,0,0.5)' }}
           />
-          <button 
+          <button
             style={{ position: 'absolute', top: '30px', right: '30px', background: 'none', border: 'none', color: 'white', fontSize: '2rem', cursor: 'pointer' }}
             onClick={() => setEnlargedImage(null)}
           >

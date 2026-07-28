@@ -38,7 +38,7 @@ const EMPTY_FORM = {
   title: '', location: '', type: '', price: '',
   description: '', rating: 4.5, reviews: 0, badge: '', image: '',
   about_text: '', amenities: [], gallery: [], quick_facts: {}, floor_plans: [],
-  address: { area: '', city: '', state: '', pincode: '' },
+  address: { area: '', city: '', state: '', pincode: '', map_url: '' },
   brochure_url: ''
 };
 
@@ -99,13 +99,22 @@ export default function CommunitiesPage() {
   }
 
   const [categoryGroups, setCategoryGroups] = useState({});
+  const [customTypes, setCustomTypes] = useState([]);
 
-  async function fetchCategories() {
+  async function fetchCategoriesAndTypes() {
     if (!isSupabaseConfigured) return;
     try {
-      const { data } = await supabase.from('categories').select('name, category_group');
-      if (data) {
-        const grouped = data.reduce((acc, cat) => {
+      const [typesRes, catsRes] = await Promise.all([
+        supabase.from('custom_types').select('*').order('created_at'),
+        supabase.from('categories').select('name, category_group')
+      ]);
+
+      if (typesRes.data) {
+        setCustomTypes(typesRes.data);
+      }
+
+      if (catsRes.data) {
+        const grouped = catsRes.data.reduce((acc, cat) => {
           const group = cat.category_group;
           if (!acc[group]) acc[group] = [];
           acc[group].push(cat.name);
@@ -114,13 +123,13 @@ export default function CommunitiesPage() {
         setCategoryGroups(grouped);
       }
     } catch (err) {
-      console.error('Error fetching categories:', err);
+      console.error('Error fetching categories and types:', err);
     }
   }
 
   useEffect(() => { 
     fetchCommunities(); 
-    fetchCategories();
+    fetchCategoriesAndTypes();
   }, []);
 
   const openAdd = () => {
@@ -439,45 +448,49 @@ export default function CommunitiesPage() {
                   </div>
 
                   <div style={{ marginBottom: '1rem' }}>
+                    <label style={labelStyle}>GOOGLE MAPS URL</label>
+                    <input type="text" value={form.address?.map_url || ''} onChange={(e) => setForm(f => ({ ...f, address: { ...f.address, map_url: e.target.value } }))} placeholder="e.g. https://maps.google.com/..." style={inputStyle} />
+                  </div>
+
+                  <div style={{ marginBottom: '1rem' }}>
                     <label style={labelStyle}>STARTING PRICE</label>
                     <input type="text" value={form.price} onChange={(e) => setForm(f => ({ ...f, price: e.target.value }))} placeholder="From ₹1,00,000/mo" style={inputStyle} />
                   </div>
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-                    {/* Facility Type */}
-                    <div>
-                      <label style={labelStyle}>FACILITY TYPE</label>
-                      <select 
-                        value={form.type} 
-                        onChange={(e) => setForm(f => ({ ...f, type: e.target.value }))} 
-                        style={inputStyle}
-                      >
-                        <option value="">Select Facility Type</option>
-                        {(categoryGroups['facility'] || []).map(name => (
-                          <option key={name} value={name}>{name}</option>
-                        ))}
-                      </select>
-                    </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '1rem' }}>
+                    {(customTypes.length > 0 ? customTypes : [
+                      { key: 'facility', name: 'Facility Type' },
+                      { key: 'room', name: 'Room Type' },
+                      { key: 'badge', name: 'Badge' }
+                    ]).map(type => {
+                      let value = '';
+                      if (type.key === 'facility') value = form.type || '';
+                      else if (type.key === 'badge') value = form.badge || '';
+                      else value = form.quick_facts?.[type.key] || '';
 
-                    {/* Room Type */}
-                    <div>
-                      <label style={labelStyle}>ROOM TYPE</label>
-                      <select 
-                        value={form.quick_facts?.room_type || ''} 
-                        onChange={(e) => setForm(f => ({ ...f, quick_facts: { ...f.quick_facts, room_type: e.target.value } }))} 
-                        style={inputStyle}
-                      >
-                        <option value="">Select Room Type</option>
-                        {(categoryGroups['room'] || []).map(name => (
-                          <option key={name} value={name}>{name}</option>
-                        ))}
-                      </select>
-                    </div>
+                      const onChange = (e) => {
+                        const val = e.target.value;
+                        if (type.key === 'facility') setForm(f => ({ ...f, type: val }));
+                        else if (type.key === 'badge') setForm(f => ({ ...f, badge: val }));
+                        else setForm(f => ({ ...f, quick_facts: { ...f.quick_facts, [type.key]: val } }));
+                      };
 
-                    <div>
-                      <label style={labelStyle}>BADGE</label>
-                      <input type="text" value={form.badge} onChange={(e) => setForm(f => ({ ...f, badge: e.target.value }))} placeholder="e.g. Premium, Top Rated" style={inputStyle} />
-                    </div>
+                      const options = categoryGroups[type.key] || [];
+
+                      return (
+                        <div key={type.key}>
+                          <label style={labelStyle}>{type.name.toUpperCase()}</label>
+                          {options.length > 0 ? (
+                            <select value={value} onChange={onChange} style={inputStyle}>
+                              <option value="">Select {type.name}</option>
+                              {options.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                            </select>
+                          ) : (
+                            <input type="text" value={value} onChange={onChange} placeholder={`e.g. ${type.name}`} style={inputStyle} />
+                          )}
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
 

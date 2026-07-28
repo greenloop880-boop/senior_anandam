@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
 import CityGrid from './components/CityGrid';
@@ -19,10 +19,29 @@ import CommunityDetail from './pages/community/CommunityDetail';
 import AllCommunities from './pages/community/AllCommunities';
 
 function App() {
-  const [currentPage, setCurrentPage] = useState('home');
+  const [currentPage, setCurrentPage] = useState(() => {
+    return sessionStorage.getItem('seniorDash_currentPage') || 'home';
+  });
   const [isTourModalOpen, setIsTourModalOpen] = useState(false);
-  const [selectedCommunity, setSelectedCommunity] = useState(null);
+  const [selectedCommunity, setSelectedCommunity] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem('seniorDash_selectedCommunity');
+      return saved ? JSON.parse(saved) : null;
+    } catch (e) {
+      return null;
+    }
+  });
   const [searchParams, setSearchParams] = useState(null);
+
+  // Save state to sessionStorage on change
+  useEffect(() => {
+    sessionStorage.setItem('seniorDash_currentPage', currentPage);
+    if (selectedCommunity) {
+      sessionStorage.setItem('seniorDash_selectedCommunity', JSON.stringify(selectedCommunity));
+    } else {
+      sessionStorage.removeItem('seniorDash_selectedCommunity');
+    }
+  }, [currentPage, selectedCommunity]);
 
   const handleSearch = (params) => {
     setSearchParams(params);
@@ -96,7 +115,7 @@ function App() {
       </main>
       <Footer setCurrentPage={setCurrentPage} />
       <FloatingCTA />
-      <TourModal isOpen={isTourModalOpen} onClose={() => setIsTourModalOpen(false)} />
+      <TourModal isOpen={isTourModalOpen} onClose={() => setIsTourModalOpen(false)} selectedCommunity={selectedCommunity} />
     </div>
   );
 }
